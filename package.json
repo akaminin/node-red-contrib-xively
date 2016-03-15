@@ -1,0 +1,27 @@
+{
+  "name": "node-red-xi-core",
+  "version": "0.0.0",
+  "description": "a Node-RED package for interaction with Xively",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattotodd/node-red-xi-core.git"
+  },
+  "keywords": [
+    "npm",
+    "node-red"
+  ],
+  "author": "Matt Sullivan <msullivan@logmein.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mattotodd/node-red-xi-core/issues"
+  },
+  "homepage": "https://github.com/mattotodd/node-red-xi-core#readme"
+}
