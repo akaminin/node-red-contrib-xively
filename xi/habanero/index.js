@@ -8,7 +8,6 @@ redisClient.on("error", function (err) {
 
 var adminAuth = require("./adminAuth");
 var auth = require("./auth");
-var init = require("./init");
 var settings = require("./settings");
 
 

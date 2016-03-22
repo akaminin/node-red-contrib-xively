@@ -54,7 +54,7 @@ var setupDefaultFlows = function(habaneroIdmUser){
         });
         RED.nodes.addCredentials(credsId, habaneroIdmUser);
         RED.nodes.setFlows(flows, "full");
-        habaneroSettings.set({credsId:credsId}).then(function(settingsSaved){
+        habaneroSettings.set({credsId:credsId, accountId:habaneroIdmUser.account_id}).then(function(settingsSaved){
             resolve();
         });
     });
@@ -77,6 +77,7 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken){
             habaneroIdmUserCreds.account_user_id = createAccountUserResp.accountUser.id;
             return setupDefaultFlows(habaneroIdmUserCreds);
         }).then(function(){
+            RED.log.info("Successfully setup habanero user: "+habaneroIdmUserCreds.username);
             return resolve(habaneroIdmUserCreds);
         }).catch(function(err){
             console.log("setupXiAuth err: "+err);
