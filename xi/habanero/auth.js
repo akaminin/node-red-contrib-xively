@@ -72,7 +72,7 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken){
                 username: idmUser.email,
                 password: idmUser.password
             };
-            return blueprint.accountUsers.post(xiAccountId, jwt);
+            return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId);
         }).then(function(createAccountUserResp){
             habaneroIdmUserCreds.account_user_id = createAccountUserResp.accountUser.id;
             return setupDefaultFlows(habaneroIdmUserCreds);

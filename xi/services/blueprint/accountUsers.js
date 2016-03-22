@@ -22,7 +22,7 @@ var getAccountUsers = function(accountId, jwt) {
   });
 };
 
-var postAccountUsers = function(accountId, jwt) {
+var postAccountUsers = function(accountId, jwt, userId) {
     //creates an account user
     return when.promise(function(resolve) {
         request.post({
@@ -31,7 +31,8 @@ var postAccountUsers = function(accountId, jwt) {
             Authorization: "Bearer "+ jwt
           },
           form:{
-            accountId: accountId
+            accountId: accountId,
+            userId: userId
           }
         },
         function(err,httpResponse,body){ 
