@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 IBM Corp.
+  Copyright 2014 LogMeIn Inc
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,56 +14,105 @@
   limitations under the License.
 -->
 
-<!-- Sample html file that corresponds to the 99-sample.js file              -->
-<!-- This creates and configures the onscreen elements of the node           -->
+<script type="text/x-red" data-template-name="xively-user-credentials">
+    <div class="form-row" id="node-config-xively-user-credentials-row">
+        <p style="margin-top: 10px;"><b>1.</b> <span data-i18n="xively.label.register"></span> <a href="#" target="_blank" style="text-decoration:underline;">xively.com</a></p>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-creds_name"><i class="fa fa-tag"></i> <span data-i18n="xively.creds.label.name"></span></label>
+        <input type="text" id="node-config-input-creds_name">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-account_id"><i class="fa fa-university"></i> <span data-i18n="xively.creds.label.accountId"></span></label>
+        <input type="text" id="node-config-input-account_id">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-username"><i class="fa fa-user"></i> <span data-i18n="xively.creds.label.username"></span></label>
+        <input type="text" id="node-config-input-username">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-password"><i class="fa fa-key"></i> <span data-i18n="xively.creds.label.password"></span></label>
+        <input type="password" id="node-config-input-password">
+    </div>
+</script>
 
-<!-- If you use this as a template, update the copyright with your own name. -->
+<script type="text/javascript">
+(function() {
+    RED.nodes.registerType('xively-user-credentials',{
+        category: 'config',
+        defaults: {
+            creds_name: {value:""}
+        },
+        credentials: {
+            creds_name: {type: "text"},
+            account_id: {type: "text"},
+            user_id: {type: "text"},
+            account_user_id: {type: "text"},
+            username: {type: "text"},
+            password: {type: "password"}
+        },
+        label: function() {
+            return this.creds_name;
+        },
+        exportable: false,
+        oneditprepare: function() {
+            var xivelyUserCredsConfigNodeId = this.id;
+            var register = this._("xively.label.register");
+            var c = this._("xively.creds.name");
+            function showXivelyName(credsName) {
+                $("#node-config-input-screen_name").val(sn);
+                $("#node-config-twitter-row").html('<label><i class="fa fa-user"></i> '+credsName+'</label><span class="input-xlarge uneditable-input">'+credsName+'</span><input type="text" id="node-config-input-creds_name" value="'+credsName+'">');
+            }
 
-<!-- First, the content of the edit dialog is defined.                       -->
+            if (!this.account_id || this.account_id === "") {
+
+            } else {
+                if (this.credentials.creds_name) {
+                    showXivelyName(this.credentials.creds_name);
+                } else {
+  
+                }
+            }
+
+        },
+        oneditsave: function() {
+        },
+        oneditcancel: function(adding) {
+        }
+    });
+})();
+</script>
 
 <script type="text/x-red" data-template-name="xively in">
-   <!-- data-template-name identifies the node type this is for              -->
-
-   <!-- Each of the following divs creates a field in the edit dialog.       -->
-   <!-- Generally, there should be an input for each property of the node.   -->
-   <!-- The for and id attributes identify the corresponding property        -->
-   <!-- (with the 'node-input-' prefix).                                     -->
-   <!-- The available icon classes are defined Font Awesome Icons (FA Icons) -->
     <div class="form-row">
-        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
-        <input type="text" id="node-input-topic" placeholder="Topic">
+        <label for="node-input-xively"><i class="fa fa-user"></i> <span data-i18n="xively.label.xively-user-creds"></span></label>
+        <input type="text" id="node-input-xively_creds">
     </div>
-
-    <br/>
-    <!-- By convention, most nodes have a 'name' property. The following div -->
-    <!-- provides the necessary field. Should always be the last option      -->
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <br />
+    <div class="form-row">
+        <label for="node-input-device_id"><i class="fa fa-tasks"></i> Device Id</label>
+        <input type="text" id="node-input-device_id" placeholder="Device Id">
+    </div>
 </script>
 
-
-<!-- Next, some simple help text is provided for the node.                   -->
 <script type="text/x-red" data-help-name="xively in">
-   <!-- data-help-name identifies the node type this help is for             -->
-   <!-- This content appears in the Info sidebar when a node is selected     -->
-   <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
-   <!-- node in the palette.                                                 -->
-   <p>Simple sample input node. Just sends a single message when it starts up.
-   This is not very useful.</p>
-   <p>Outputs an object called <code>msg</code> containing <code>msg.topic</code> and
-   <code>msg.payload</code>. msg.payload is a String.</p>
+   <p>Xively input that connects to broker.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
     RED.nodes.registerType('xively in',{
-        category: 'input',      // the palette category
+        category: 'xively',      // the palette category
+        color:"#F84632",
         defaults: {             // defines the editable properties of the node
+            xively_creds: {type:"xively-user-credentials",required:true},
             name: {value:""},   //  along with default values.
-            topic: {value:"", required:true}
+            device_id: {value:"", required:true}
         },
         inputs:0,               // set the number of inputs - only 0 or 1
         outputs:1,              // set the number of outputs - 0 to n

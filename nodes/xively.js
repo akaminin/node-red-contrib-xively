@@ -21,13 +21,24 @@ module.exports = function(RED) {
     "use strict";
     // require any external libraries we may need....
 
-    //RED.settings
-    //credentials
+    function XivelyUserCredentialsNode (config) {
+        RED.nodes.createNode(this, config);
+        this.creds_name = config.creds_name;
+    }
 
-
+    RED.nodes.registerType("xively-user-credentials", XivelyUserCredentialsNode, {
+        credentials: {
+            creds_name: {type: "text"},
+            account_id: {type: "text"},
+            user_id: {type: "text"},
+            account_user_id: {type: "text"},
+            username: {type: "text"},
+            password: {type: "password"}
+        }
+    });
 
     // The main node definition - most things happen in here
-    function XivelyInNode(config) {
+    function XivelyInNode (config) {
         // Create a RED node
         RED.nodes.createNode(this,config);
 
@@ -43,7 +54,7 @@ module.exports = function(RED) {
         // Look at other real nodes for some better ideas of what to do....
         var msg = {};
         msg.topic = this.topic;
-        msg.payload = "Hello world !"
+        msg.payload = "Hello world !";
 
         // send out the message to the rest of the workspace.
         // ... this message will get sent at startup so you may not see it in a debug node.
@@ -63,8 +74,6 @@ module.exports = function(RED) {
         });
     }
 
-    // Register the node by name. This must be called before overriding any of the
-    // Node functions.
-    RED.nodes.registerType("xivey in",XivelyInNode);
+    RED.nodes.registerType("xively in", XivelyInNode);
 
 }

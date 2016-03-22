@@ -1,0 +1,24 @@
+{
+    "xively": {
+        "label": {
+            "xively":"Xively",
+            "account-id": "Account Id",
+            "access-token": "Access Token",
+            "register": "Register to get your credentials at",
+            "xively-user-creds": "Xively Creds"
+        },
+        "creds":{
+            "label":{
+                "name": "Label",
+                "accountId": "Account Id",
+                "username": "Username",
+                "password": "Password"
+            }
+        },
+        "status": {
+            "failed":"failed"
+        },
+        "errors": {
+        }
+    }
+}
