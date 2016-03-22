@@ -25,7 +25,6 @@ module.exports = {
     //end adminAuth
 
     auth: auth,
-    init: init.Habanero,
     isHabaneroInstance: isHabaneroInstance,
     settings: settings
 }
