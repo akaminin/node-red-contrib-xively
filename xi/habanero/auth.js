@@ -91,5 +91,5 @@ var loginUser = function(username, password, accountId){
 
 module.exports = {
     loginUser:loginUser,
-   	setupHabaneroAuth: setupHabaneroAuth
+    setupHabaneroAuth: setupHabaneroAuth
 };
