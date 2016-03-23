@@ -45,6 +45,8 @@
         "z": "cdac0bb5.7b18e8",
         "xively_creds": "702a0f4d.21805",
         "name": "Xively In",
+        "device_template":"",
+        "device_channel":"",
         "x": 132.5,
         "y": 180,
         "wires": [

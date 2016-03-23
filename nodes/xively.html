@@ -85,44 +85,138 @@
 
 <script type="text/x-red" data-template-name="xively in">
     <div class="form-row">
-        <label for="node-input-xively"><i class="fa fa-user"></i> <span data-i18n="xively.label.xively-user-creds"></span></label>
+        <label for="node-input-xively_creds"><i class="fa fa-user"></i> <span data-i18n="xively.label.xively-user-creds"></span></label>
         <input type="text" id="node-input-xively_creds">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <br />
     <div class="form-row">
-        <label for="node-input-device_id"><i class="fa fa-tasks"></i> Device Id</label>
-        <input type="text" id="node-input-device_id" placeholder="Device Id">
+        <label for="node-input-device_template"><i class="fa fa-hdd-o"></i> <span data-i18n="xively.label.device-type"></span></label>
+        <select type="text" id="node-input-device_template" style="display: inline-block; vertical-align: middle; width:60%;">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-device_channel"><i class="fa fa-arrows-h "></i> <span data-i18n="xively.label.channel-type"></span></label>
+        <select type="text" id="node-input-device_channel" style="display: inline-block; vertical-align: middle; width:60%;">
+            <option data-i18n="xively.label.select-channel-type"></option>
+        </select>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="xively in">
-   <p>Xively input that connects to broker.</p>
+   <p>Xively input that connects to a channel on a device template.</p>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
-<!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
     RED.nodes.registerType('xively in',{
-        category: 'xively',      // the palette category
+        category: 'xively',    
         color:"#F84632",
-        defaults: {             // defines the editable properties of the node
+        defaults: {            
             xively_creds: {type:"xively-user-credentials",required:true},
-            name: {value:""},   //  along with default values.
-            device_id: {value:"", required:true}
+            name: {value:""},   
+            device_template: {value:"", required:true},
+            device_channel: {value:"", required:true}
         },
-        inputs:0,               // set the number of inputs - only 0 or 1
-        outputs:1,              // set the number of outputs - 0 to n
-        // set the icon (held in icons dir below where you save the node)
-        icon: "myicon.png",     // saved in  icons/myicon.png
-        label: function() {     // sets the default label contents
-            return this.name||this.topic||"sample";
+        inputs:0,             
+        outputs:1,              
+        icon: "inject.png",    
+        label: function() {    
+            return this.name||this.topic||"Xively In";
         },
-        labelStyle: function() { // sets the class to apply to the label
+        labelStyle: function() { 
             return this.name?"node_label_italic":"";
-        }
+        },
+        oneditprepare: function(){
+            var xivelyCredsInput = $("#node-input-xively_creds");
+            var deviceTemplateInput = $("#node-input-device_template");
+            var channelInput = $("#node-input-device_channel");
+            var channelTemplates = {};
+
+            var selectDeviceTypeMsg = this._("xively.label.select-device-type");
+            var selectChannelTypeMsg = this._("xively.label.select-channel-type");
+
+            var device_template = this.device_template;
+            var device_channel = this.device_channel;
+
+            function setupDeviceTemplates(xively_creds, select){
+                $.getJSON('xively/deviceTemplates/'+xively_creds,function(templates) {
+                    deviceTemplateInput.off("change", onDeviceTemplateInputChange);
+                    deviceTemplateInput.empty();
+                    deviceTemplateInput.append(new Option(selectDeviceTypeMsg, ""));
+                    $.each(templates, function(i, template){
+                        deviceTemplateInput.append(new Option(
+                            template.name, 
+                            template.id));
+                        channelTemplates[template.id] = template.channelTemplates;
+                    });
+   
+                    deviceTemplateInput.prop('disabled', false);
+                    if(device_template !== "" && 
+                        deviceTemplateInput.find("option[value='" + device_template + "']").length !== 0){
+                        deviceTemplateInput.val(device_template);
+                        deviceTemplateInput.removeClass("input-error");
+                        setupChannelTemplates(device_template);
+                    }
+
+                    deviceTemplateInput.on("change", onDeviceTemplateInputChange);
+                });
+            }
+
+            function setupChannelTemplates(deviceTemplateId){
+                channelInput.empty();
+                channelInput.append(new Option(selectChannelTypeMsg, ""));
+                var templates = channelTemplates[deviceTemplateId];
+                $.each(templates, function(i, template){
+                    var selected = template.id == device_channel;
+                    channelInput.append(new Option(
+                        template.name, 
+                        template.id));
+                });
+                channelInput.prop('disabled', false);
+                if(device_channel !== "" && 
+                    channelInput.find("option[value='" + device_channel + "']").length !== 0){
+                    channelInput.val(device_channel);
+                    channelInput.removeClass("input-error");
+                }
+            }
+
+            function onXivelyCredsInputChange(e){
+                var currentVal = xivelyCredsInput.val();
+                if(currentVal == "" || currentVal == "_ADD_"){
+                    deviceTemplateInput.prop('disabled', 'disabled');
+                    channelInput.prop('disabled', 'disabled');
+                }else{
+                    setupDeviceTemplates(currentVal);
+                }
+            }
+
+            function onDeviceTemplateInputChange(e){
+                var currentVal = deviceTemplateInput.val();
+                console.log(currentVal);
+                if(currentVal == "" || currentVal == null){
+                    channelInput.empty();
+                    channelInput.append(new Option(selectChannelTypeMsg, ""));
+                    channelInput.prop('disabled', 'disabled');
+                }else{
+                    setupChannelTemplates(currentVal);
+                }
+            }
+
+            if (!this.xively_creds || this.xively_creds === "") {
+                deviceTemplateInput.prop('disabled', 'disabled');
+            }else{
+                setupDeviceTemplates(this.xively_creds, true);
+            }
+
+            if (!this.device_template || this.device_template === "") {
+                channelInput.prop('disabled', 'disabled');
+            }
+
+            xivelyCredsInput.on("change", onXivelyCredsInputChange);
+
+            deviceTemplateInput.on("change", onDeviceTemplateInputChange);
+        },
     });
 </script>

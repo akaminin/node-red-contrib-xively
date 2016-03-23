@@ -15,6 +15,39 @@ var habaneroSettings = require('./settings');
 var RED = require("../../../../red/runtime");
 
 
+var cachedJwts = {};
+
+var getJwtForCredentialsId = function(credentialsId){
+    return when.promise(function(resolve, reject) {
+        if(cachedJwts[credentialsId]){
+            var jwtConfig = cachedJwts[credentialsId];
+            var now  = new Date();
+            //check if its been 15 minutes since getting jwt
+            var expiration = new Date(jwtConfig.obtained.getTime() + 15*60000);
+            if(now < expiration){
+                resolve(cachedJwts[credentialsId]);
+            }
+        }
+        //need to go log in with credentials
+        var creds = RED.nodes.getCredentials(credentialsId);
+        loginUser(creds.username, creds.password, creds.account_id).then(function(loginResp){
+            if(loginResp == null){
+                reject("Error loggin in with user: "+creds.username);
+            }
+            //cache the result
+            cachedJwts[credentialsId] = {
+                obtained: new Date(),
+                jwt: loginResp["jwt"],
+                account_id: creds.account_id
+            };
+            resolve(cachedJwts[credentialsId]);
+        }).catch(function(err){
+            reject("Unkown error: "+err);
+        });
+    });
+
+};
+
 var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
     return when.promise(function(resolve, reject) {
         var loop = 0;
@@ -92,5 +125,6 @@ var loginUser = function(username, password, accountId){
 
 module.exports = {
     loginUser:loginUser,
+    getJwtForCredentialsId: getJwtForCredentialsId,
     setupHabaneroAuth: setupHabaneroAuth
 };

@@ -21,6 +21,12 @@ module.exports = function(RED) {
     "use strict";
     // require any external libraries we may need....
 
+    var xiRed = require("../");
+
+    var blueprint = require("../xi/services/blueprint");
+
+    var JWT = {};
+
     function XivelyUserCredentialsNode (config) {
         RED.nodes.createNode(this, config);
         this.creds_name = config.creds_name;
@@ -76,4 +82,16 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("xively in", XivelyInNode);
 
+
+
+    RED.httpAdmin.get('/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {
+        xiRed.habanero.auth.getJwtForCredentialsId(req.params.id).then(function(jwtConfig){
+            blueprint.devicesTemplates.get(jwtConfig.account_id, jwtConfig.jwt).then(function(dTemplatesResp){
+                res.json(dTemplatesResp.deviceTemplates.results);
+            });
+        }).catch(function(err){
+            console.log(err);
+            res.json([err]);
+        });
+    });
 }
