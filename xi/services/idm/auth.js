@@ -1,7 +1,7 @@
 var when = require("when");
 var request = require('request');
 
-var IDM_BASE_URL = "https://id.xively.com/api/v1/";
+var IDM_BASE_URL = "https://id.demo.xively.com/api/v1/";
 
 function validateJwt(accessToken, jwt) {
     return when.promise(function(resolve) {

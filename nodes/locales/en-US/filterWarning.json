@@ -1,0 +1,14 @@
+{
+    "xively": {
+        "label": {
+
+                "value":"Trigger",
+                "value-unit": "hours left in filter life",
+                "repeat":"Repeat Cycle",
+                "repeat-unit":"minutes"
+        },
+        "tip":{
+            "filter-repeat-info":"<b>Note:</b> Repeat Cycle is the minimum amount of time before this will trigger again."
+        }
+    }
+}

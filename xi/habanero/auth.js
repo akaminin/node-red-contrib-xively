@@ -75,7 +75,7 @@ var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
 var setupDefaultFlows = function(habaneroIdmUser){
     return when.promise(function(resolve, reject) {
         var credsId = RED.util.generateId();
-        var defaultFlows = require('./defaultFlows/exampleFlows.json');
+        var defaultFlows = require('./defaultFlows/airFilterFlows.json');
         var flows = [];
         defaultFlows.forEach(function(node, index, array){
             if(node.type == "xively-user-credentials"){

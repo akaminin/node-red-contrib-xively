@@ -1,0 +1,54 @@
+<!--
+  Copyright 2014 LogMeIn Inc
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="filter-warning">
+    <div class="form-row">
+        <label for="node-input-trigger_value"><i class="fa fa-hourglass-end "></i> <span data-i18n="xively.label.value"></span></label>
+        <input type="text" id="node-input-trigger_value" style="width: 80px"> <span data-i18n="xively.label.value-unit">seconds</span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-trigger_repeat"><i class="fa fa-repeat"></i> <span data-i18n="xively.label.repeat"></span></label>
+        <input type="text" id="node-input-trigger_repeat" style="width: 80px"> <span data-i18n="xively.label.repeat-unit">seconds</span>
+    </div>
+    <div class="form-tips" id="node-tip"><span data-i18n="[html]xively.tip.filter-repeat-info"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="filter-warning">
+   <p>Node that will only forward the message on if the AirSoClean 3000 filter life is below a certain level.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('filter-warning',{
+        category: 'xively',    
+        color:'Silver',
+        defaults: {             
+            trigger_value: {value:48, validate:RED.validators.number(), required:true},
+            trigger_repeat: {value:5, validate:RED.validators.number(), required:true}
+        },
+        inputs:1,             
+        outputs:1,              
+        icon: "function.png",    
+        label: function() {    
+            return this.name||"Filter Warning";
+        },
+        labelStyle: function() { 
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+          return "Filter Warning";
+        },
+    });
+</script>

@@ -8,6 +8,7 @@ redisClient.on("error", function (err) {
 
 var adminAuth = require("./adminAuth");
 var auth = require("./auth");
+var util = require("./util");
 var settings = require("./settings");
 
 
@@ -24,6 +25,7 @@ module.exports = {
     //end adminAuth
 
     auth: auth,
+    util:util,
     isHabaneroInstance: isHabaneroInstance,
     settings: settings
 }

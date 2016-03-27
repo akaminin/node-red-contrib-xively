@@ -22,10 +22,11 @@ module.exports = function(RED) {
     // require any external libraries we may need....
 
     var xiRed = require("../");
+    var util = xiRed.habanero.util;
 
     var blueprint = require("../xi/services/blueprint");
 
-    var JWT = {};
+    var mqtt = require("mqtt");
 
     function XivelyUserCredentialsNode (config) {
         RED.nodes.createNode(this, config);
@@ -43,45 +44,98 @@ module.exports = function(RED) {
         }
     });
 
-    // The main node definition - most things happen in here
     function XivelyInNode (config) {
-        // Create a RED node
         RED.nodes.createNode(this,config);
 
-        // Store local copies of the node configuration (as defined in the .html)
-        this.topic = config.topic;
+        this.xively_creds = config.xively_creds;
+        this.device_template = config.device_template;
+        this.device_channel = config.device_channel;
+        this.payload_format = config.payload_format || "raw";
 
-        // copy "this" object in case we need it in context of callbacks of other functions.
+        var credentials = RED.nodes.getCredentials(this.xively_creds);
+
         var node = this;
 
-        // Do whatever you need to do in here - declare callbacks etc
-        // Note: this sample doesn't do anything much - it will only send
-        // this message once at startup...
-        // Look at other real nodes for some better ideas of what to do....
-        var msg = {};
-        msg.topic = this.topic;
-        msg.payload = "Hello world !";
+        function onMqttMessage(topic, message){
+            var payload = message.toString();
 
-        // send out the message to the rest of the workspace.
-        // ... this message will get sent at startup so you may not see it in a debug node.
-        this.send(msg);
+            if(node.payload_format == "json"){
+                payload = util.format.tSDataToJSON(payload);
+            }
 
-        // respond to inputs....
-        this.on('input', function (msg) {
-            node.warn("I saw a payload: "+msg.payload);
-            // in this example just send it straight on... should process it here really
-            node.send(msg);
+            node.send({
+                topic: topic,
+                topicMeta: util.regex.topicToObject(topic),
+                payload: payload
+            });
+        }
+
+        function deviceSubscribe(device){
+            device.channels.forEach(function(channelType){
+                if(channelType.channelTemplateId == node.device_channel){
+                    node.mqttClient.subscribe(channelType.channel, function(err, granted){
+                        if(!err){
+                            //console.log("subscribed to: "+channelType.channel);
+                        }else{
+                            console.log("error subscribing: "+err);
+                        }
+                    });
+                }
+            });
+        }
+        var jwtConfig;
+
+        //begin by going and getting a JWT for idm user
+        xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtResp){
+            jwtConfig = jwtResp;
+            //get mqtt creds for account-user
+            return blueprint.accessMqttCredentials.create(
+                jwtConfig.account_id, 
+                jwtConfig.jwt,
+                "accountUser",
+                credentials.account_user_id
+            );
+        }).then(function(mqttCreateResp){
+            //setup mqttClient
+            node.mqttClient = mqtt.connect("mqtts://",{
+                  host: "broker.demo.xively.com",
+                  port: Number(8883),
+                  username: credentials.account_user_id,
+                  password: mqttCreateResp.mqttCredential.secret,
+                  debug: true
+            });
+
+            node.mqttClient.on('connect', function () {
+                console.log("mqttClient connected");
+            });
+
+            node.mqttClient.on('message', onMqttMessage);
+            // end setup mqttClient
+
+            //go get device list
+            blueprint.devices.getByDeviceTemplateId(
+                jwtConfig.account_id, 
+                jwtConfig.jwt,
+                node.device_template
+            ).then(function(devicesResp){
+                // subscribe for each device
+                devicesResp.devices.results.forEach(function(device, index){
+                    deviceSubscribe(device);
+                });
+            });
+        }).catch(function(err){
+            console.log("Error setting up XivelyInNode: " + err);
         });
 
-        this.on("close", function() {
-            // Called when the node is shutdown - eg on redeploy.
-            // Allows ports to be closed, connections dropped etc.
-            // eg: node.client.disconnect();
+        node.on("close", function() {
+            // Called when the node is shutdown 
+            if(node.mqttClient){
+                node.mqttClient.end(true);
+            }
         });
     }
 
     RED.nodes.registerType("xively in", XivelyInNode);
-
 
 
     RED.httpAdmin.get('/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {

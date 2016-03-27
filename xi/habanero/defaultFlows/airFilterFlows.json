@@ -1,0 +1,57 @@
+[
+    {
+        "type": "tab",
+        "id": "cdac0bb5.7b18e8",
+        "label": "Xi Example Flow"
+    },
+    {
+        "id": "3c015800.c3fea8",
+        "type": "xively-user-credentials",
+        "z": "",
+        "creds_name": "HabaneroUser"
+    },
+    {
+        "id": "b54ba5c8.c031d8",
+        "type": "xively in",
+        "z": "cdac0bb5.7b18e8",
+        "xively_creds": "3c015800.c3fea8",
+        "name": "AirSoClean3000 Sensor",
+        "device_template": "",
+        "device_channel": "",
+        "payload_format": "json",
+        "x": 123.5,
+        "y": 79,
+        "wires": [
+            [
+                "8007d37e.ce284"
+            ]
+        ]
+    },
+    {
+        "id": "df3d3e74.23c05",
+        "type": "debug",
+        "z": "cdac0bb5.7b18e8",
+        "name": "Debug Meta Info",
+        "active": true,
+        "console": "false",
+        "complete": "topicMeta",
+        "x": 507.5,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "8007d37e.ce284",
+        "type": "filter-warning",
+        "z": "cdac0bb5.7b18e8",
+        "trigger_value": 48,
+        "trigger_repeat": 5,
+        "x": 260.5,
+        "y": 167,
+        "wires": [
+            [
+                "df3d3e74.23c05",
+                "afd0914a.0818c"
+            ]
+        ]
+    }
+]

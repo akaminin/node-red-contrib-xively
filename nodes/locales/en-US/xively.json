@@ -10,7 +10,19 @@
             "account-id": "Account Id",
             "access-token": "Access Token",
             "register": "Register to get your credentials at",
-            "xively-user-creds": "Xively Creds"
+            "xively-user-creds": "Xively Creds",
+            "payload-format":"Payload Format",
+            "raw":"Raw",
+            "json":"JSON",
+
+            "value":"When",
+                "value-unit": "hours",
+                "repeat":"Repeat",
+                "repeat-unit":"minutes",
+                "repeat-info":"<b>Note:</b> Repeat is the minimum amount of time before this will trigger again."
+        },
+        "tip":{
+            "filter-repeat-info":"<b>Note:</b> Repeat is the minimum amount of time before this will trigger again."
         },
         "creds":{
             "label":{

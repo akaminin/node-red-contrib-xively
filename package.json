@@ -26,10 +26,16 @@
   "homepage": "https://github.com/mattotodd/node-red-contrib-xively#readme",
   "node-red": {
     "nodes": {
-      "xively": "nodes/xively.js"
+      "xively": "nodes/xively.js",
+      "filter-warning": "nodes/filterWarning.js",
+      "salesforce": "nodes/salesforce.js"
     }
   },
   "dependencies": {
+    "jsforce": "^1.6.0",
+    "lodash": "^4.6.1",
+    "mqtt": "^1.7.4",
+    "node-red-contrib-force": "0.0.6",
     "node-uuid": "^1.4.7",
     "redis": "^2.5.2",
     "request": "^2.69.0",
