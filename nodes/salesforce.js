@@ -225,7 +225,7 @@ module.exports = function (RED) {
 
   function ForceCreateCaseNode(n) {
     RED.nodes.createNode(this, n);
-    this.force = n.force;
+    this.salesforce = n.salesforce;
     this.sobject = n.sobject;
     this.extname = n.extname;
     this.operation = n.operation;
