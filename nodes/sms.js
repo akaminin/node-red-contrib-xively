@@ -56,9 +56,9 @@ module.exports = function(RED) {
             var renderedBody = mustache.render(node.body,msg);
             var urlEncodedBody = encodeURIComponent(renderedBody);
             var apiUrl = "https://api.sms.voxox.com/method/sendSms/key/"+credentials.api_key+"/to/"+node.number+"/body/"+urlEncodedBody;
-            // request.get({url: apiUrl}, function(err,httpResponse,body){ 
-            //   console.log("voxox resp: "+body);
-            // });
+            request.get({url: apiUrl}, function(err,httpResponse,body){ 
+              console.log("voxox resp: "+body);
+            });
         });
 
         node.on("close", function() {
