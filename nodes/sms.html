@@ -1,0 +1,108 @@
+<!--
+  Copyright 2014 LogMeIn Inc
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="xi-sms-credentials">
+    <div class="form-row">
+        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-creds_name"><i class="fa fa-user"></i> Name</label>
+        <input type="text" id="node-config-input-creds_name">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-api_key"><i class="fa fa-key"></i> Api Key</label>
+        <input type="password" id="node-config-input-api_key">
+    </div>
+</script>
+
+<script type="text/javascript">
+(function() {
+    RED.nodes.registerType('xi-sms-credentials',{
+        category: 'config',
+        defaults: {
+            creds_name: {value:"Api Key"}
+        },
+        credentials: {
+            creds_name: {type: "text"},
+            api_key: {type: "password"}
+        },
+        label: function() {
+            return this.creds_name;
+        },
+        exportable: false,
+        oneditsave: function() {
+        },
+        oneditcancel: function(adding) {
+        }
+    });
+})();
+</script>
+
+<script type="text/x-red" data-template-name="xi-sms out">
+    <div class="form-row">
+        <label for="node-input-xi_sms_creds"><i class="fa fa-user"></i> <span data-i18n="xively.label.xively-user-creds"></span></label>
+        <input type="text" id="node-input-xi_sms_creds">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-number"><i class="fa fa-mobile"></i> Number</label>
+        <input type="text" id="node-input-number" placeholder="(978)-555-1212">
+    </div>
+    <input type="hidden" id="node-input-body" autofocus="autofocus">
+    <div class="form-row node-text-editor-row">
+        <div style="height: 125px;" class="node-text-editor" id="node-input-body-editor" ></div>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="xi-sms out">
+   <p>Sends an sms message to a phone.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('xi-sms out',{
+        category: 'xively',    
+        color:"#809fff",
+        defaults: {            
+            xi_sms_creds: {type:"xi-sms-credentials",required:true},
+            name: {value:""},   
+            number: {value:"", require:true},  
+            body: {value:"", required:true}
+        },
+        inputs:1,             
+        outputs:0,              
+        icon: "inject.png",    
+        label: function() {    
+            return this.name||"Sms Out";
+        },
+        labelStyle: function() { 
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+          return "Sms Out";
+        },
+        oneditprepare: function(){
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-body-editor',
+                mode: 'ace',
+                value: $("#node-input-body").val()
+            });
+        },
+        oneditsave: function() {
+            $("#node-input-body").val(this.editor.getValue())
+            delete this.editor;
+        },
+    });
+</script>

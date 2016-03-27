@@ -31,7 +31,7 @@
         "id": "df3d3e74.23c05",
         "type": "debug",
         "z": "cdac0bb5.7b18e8",
-        "name": "Debug Meta Info",
+        "name": "Debug topicMeta",
         "active": true,
         "console": "false",
         "complete": "topicMeta",

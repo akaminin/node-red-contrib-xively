@@ -28,7 +28,8 @@
     "nodes": {
       "xively": "nodes/xively.js",
       "filter-warning": "nodes/filterWarning.js",
-      "salesforce": "nodes/salesforce.js"
+      "salesforce": "nodes/salesforce.js",
+      "sms": "nodes/sms.js"
     }
   },
   "dependencies": {
