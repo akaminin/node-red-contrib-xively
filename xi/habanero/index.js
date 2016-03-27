@@ -1,11 +1,3 @@
-var when = require("when");
-var redis = require('redis'),
-    redisClient = redis.createClient();
-redisClient.on("error", function (err) {
-    console.log("Error " + err);
-});
-
-
 var adminAuth = require("./adminAuth");
 var auth = require("./auth");
 var util = require("./util");
