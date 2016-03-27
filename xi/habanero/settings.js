@@ -1,6 +1,6 @@
 var when = require("when");
 var redis = require('redis'),
-    client = redis.createClient({
+    redisClient = redis.createClient({
         url: process.env.REDIS_URL
     });
 redisClient.on("error", function (err) {
