@@ -18,7 +18,10 @@ module.exports = {
         });
     },
 
-    authenticate: function(username, password, accountId, appId, accessToken) {
+    authenticate: function(username, password, requestBody) {
+        var accountId   = requestBody["accountId"];
+        var appId       = requestBody["appId"];
+        var accessToken = requestBody["accessToken"];
         return when.promise(function(resolve) {
             habaneroSettings.get().then(function(hSettings) {
                 var habaneroIsSetup = hSettings !== null;
@@ -41,7 +44,7 @@ module.exports = {
                         };
                         if (!habaneroIsSetup) {
                             // need to setup habanero creds
-                            auth.setupHabaneroAuth(loginResp["jwt"], accountId, appId, accessToken)
+                            auth.setupHabaneroAuth(loginResp["jwt"], accountId, appId, accessToken, requestBody)
                                 .then(resolveLogin)
                                 .catch(function(err) {
                                     console.log("Unable to setup Xi Crednetials");

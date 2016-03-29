@@ -74,7 +74,7 @@ var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
     });
 };
 
-var setupDefaultFlows = function(habaneroIdmUser){
+var setupDefaultFlows = function(habaneroIdmUser, requestBody){
     return when.promise(function(resolve, reject) {
         var credsId = RED.util.generateId();
         var defaultFlows = require('./defaultFlows/airFilterFlows.json');
@@ -82,10 +82,29 @@ var setupDefaultFlows = function(habaneroIdmUser){
         defaultFlows.forEach(function(node, index, array){
             if(node.type == "xively-user-credentials"){
                 node.id = credsId;
+            }else if(node.type == 'salesforce'){
+                // provision salesforce credentials
+                if(requestBody.SALESFORCE_USER &&
+                    requestBody.SALESFORCE_PASSWORD &&
+                     requestBody.SALESFORCE_TOKEN){
+                    var sfCredsId = RED.util.generateId();
+                    node.id = sfCredsId;
+                    node.username = requestBody.SALESFORCE_USER;
+                    RED.nodes.addCredentials(sfCredsId, {
+                        token: requestBody.SALESFORCE_TOKEN,
+                        password: requestBody.SALESFORCE_PASSWORD
+                    });
+                }else{
+                    //remove salesforce crednetials node
+                    node = null;
+                }
+
             }else if(node.hasOwnProperty("xively_creds")){
                 node.xively_creds = credsId;
             }
-            flows.push(node);
+            if(node !== null){
+                flows.push(node);
+            }
         });
         RED.nodes.addCredentials(credsId, habaneroIdmUser);
         RED.nodes.setFlows(flows, "full");
@@ -96,7 +115,7 @@ var setupDefaultFlows = function(habaneroIdmUser){
 };
 
 
-var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken){
+var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, requestBody){
     var habaneroIdmUserCreds;
     return when.promise(function(resolve, reject) {
         createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
@@ -110,7 +129,7 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken){
             return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId);
         }).then(function(createAccountUserResp){
             habaneroIdmUserCreds.account_user_id = createAccountUserResp.accountUser.id;
-            return setupDefaultFlows(habaneroIdmUserCreds);
+            return setupDefaultFlows(habaneroIdmUserCreds, requestBody);
         }).then(function(){
             RED.log.info("Successfully setup habanero user: "+habaneroIdmUserCreds.username);
             return resolve(habaneroIdmUserCreds);

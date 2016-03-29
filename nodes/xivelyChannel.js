@@ -44,7 +44,7 @@ module.exports = function(RED) {
         }
     });
 
-    function XivelyInNode (config) {
+    function XivelyChannelNode (config) {
         RED.nodes.createNode(this,config);
 
         this.xively_creds = config.xively_creds;
@@ -135,7 +135,7 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("xively in", XivelyInNode);
+    RED.nodes.registerType("xively-channel", XivelyChannelNode);
 
 
     RED.httpAdmin.get('/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {

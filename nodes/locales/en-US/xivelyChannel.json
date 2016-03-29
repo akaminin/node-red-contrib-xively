@@ -21,9 +21,6 @@
                 "repeat-unit":"minutes",
                 "repeat-info":"<b>Note:</b> Repeat is the minimum amount of time before this will trigger again."
         },
-        "tip":{
-            "filter-repeat-info":"<b>Note:</b> Repeat is the minimum amount of time before this will trigger again."
-        },
         "creds":{
             "label":{
                 "name": "Label",
