@@ -24,6 +24,7 @@ module.exports = function(RED) {
     var WEATHER_DATA_URL = 'https://xi-ext-services.herokuapp.com/api/v1/weather';
 
     function apiRespDataToWeatherInfo(respData, dataRow){
+        console.log(dataRow);
         var jsun = respData.weather;
         var weather = {data:jsun};
         weather.slug = jsun.daily.data[dataRow].icon;
@@ -107,6 +108,7 @@ module.exports = function(RED) {
             //the date string is in the format YYYY-MM-DD
             //the time string is in the format HH:MM
             var isoDateStr = null;
+            var tomorrow = false;
             if (n.date && n.time) {
                 date = n.date;
                 time = n.time;
@@ -118,6 +120,8 @@ module.exports = function(RED) {
                     var epoch = new Date(parseInt(msg.time));
                     isoDateStr = msg.time.toISOString();
                 }
+            }else{
+                tomorrow = true;
             }
 
             isoDateStr = isoDateStr || new Date().toISOString();
@@ -132,7 +136,7 @@ module.exports = function(RED) {
                 node.warn(RED._("weather.warn.more-than-10-years"));
             }
 
-            queryWeather(lat, lon, isoDateStr, n.mode === "tomorrow").then(function(weatherInfo){
+            queryWeather(lat, lon, isoDateStr, tomorrow).then(function(weatherInfo){
                 msg.weather = weatherInfo;
                 node.send(msg);
             });
