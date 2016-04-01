@@ -14,57 +14,78 @@
  * limitations under the License.
  **/
 
-// Xively Node-RED node file
+// Xively Node-RED SMS node file
 
 
 module.exports = function(RED) {
     "use strict";
     // require any external libraries we may need....
-
     var request = require('request');
-    var xiRed = require("../");
-    var util = xiRed.habanero.util;
+    var mustache = require('mustache');
 
-    var mustache = require("mustache");
-
-    function XivelySmsCredentialsNode (config) {
-        RED.nodes.createNode(this, config);
-        this.creds_name = config.creds_name;
-    }
-
-    RED.nodes.registerType("xi-sms-credentials", XivelySmsCredentialsNode, {
-        credentials: {
-            creds_name: {type: "text"},
-            api_key: {type: "password"}
-        }
-    });
+    var xiRed = require('../');
+    var SEND_SMS_POST_URL = 'https://xi-ext-services.herokuapp.com/api/v1/sms';
 
     function XivelySmsOutNode (config) {
         RED.nodes.createNode(this,config);
 
-        this.xi_sms_creds = config.xi_sms_creds;
+        this.xively_creds = config.xively_creds;
+        this.number_input_type = config.number_input_type;
         this.number = config.number;
+        this.property = config.property;
+        this.propertyType = config.propertyType || "msg";
         this.body = config.body;
-
-        var credentials = RED.nodes.getCredentials(this.xi_sms_creds);
 
         var node = this;
 
-        console.log(credentials.api_key);
+        function formatNumber(number){
+            //strip all non-numeric chars
+            number = number.replace(/\D/g,'');
+            //must start with a 1
+            if(!number.startsWith('1')){
+                number = '1' + number;
+            }
+            //must start with a plus sign
+            number = '+' + number;
+            return number;
+        }
+
+        function sendSms(toNumber, message){
+            xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtResp){
+                request.post({
+                        url: SEND_SMS_POST_URL,
+                        headers: {
+                            Authorization: 'Bearer ' + jwtResp.jwt
+                        },
+                        form:{
+                            toNumber: formatNumber(toNumber),
+                            message: message
+                        }
+                    }, 
+                    function(err,httpResponse,body){ 
+                        if(!err){
+                            RED.log.debug('send sms resp: ' + body);
+                        }else{
+                            RED.log.error('error sending sms: ' + err);
+                        }
+                    }
+                );
+            });
+        }
 
         node.on('input', function (msg) {
-            var renderedBody = mustache.render(node.body,msg);
-            var urlEncodedBody = encodeURIComponent(renderedBody);
-            var apiUrl = "https://api.sms.voxox.com/method/sendSms/key/"+credentials.api_key+"/to/"+node.number+"/body/"+urlEncodedBody;
-            request.get({url: apiUrl}, function(err,httpResponse,body){ 
-              console.log("voxox resp: "+body);
-            });
+            var renderedBody = mustache.render(node.body, msg);
+            var toNumber = node.number;
+            if(node.number_input_type === "property"){
+                toNumber = RED.util.evaluateNodeProperty(node.property,node.propertyType,node,msg);
+            }
+            sendSms(toNumber, renderedBody);
         });
 
-        node.on("close", function() {
+        node.on('close', function() {
             // Called when the node is shutdown 
         });
     }
 
-    RED.nodes.registerType("xi-sms out", XivelySmsOutNode);
+    RED.nodes.registerType('xi-sms out', XivelySmsOutNode);
 }

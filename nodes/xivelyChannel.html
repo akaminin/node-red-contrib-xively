@@ -14,13 +14,44 @@
   limitations under the License.
 -->
 
+<script type="text/x-red" data-template-name="filter-on-weekdays">
+    <p>Only forward msg if its a weekday.</p>
+</script>
+
+<script type="text/x-red" data-help-name="filter-on-weekdays">
+   <p>Only forward msg if its a weekday.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('filter-on-weekdays',{
+        category: 'filter',    
+        color:"Silver",
+        defaults: {            
+            name: {value:""}
+        },
+        inputs:1,             
+        outputs:1,              
+        icon: "function.png",    
+        label: function() {    
+            return this.name||"On Weekdays";
+        },
+        labelStyle: function() { 
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+          return "On Weekdays";
+        }
+    });
+</script>
+
+
 <script type="text/x-red" data-template-name="xively-user-credentials">
     <div class="form-row" id="node-config-xively-user-credentials-row">
         <p style="margin-top: 10px;"><b>1.</b> <span data-i18n="xively.label.register"></span> <a href="#" target="_blank" style="text-decoration:underline;">xively.com</a></p>
     </div>
     <div class="form-row">
         <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-creds_name"><i class="fa fa-tag"></i> <span data-i18n="xively.creds.label.name"></span></label>
-        <input type="text" id="node-config-input-creds_name">
+        <input type="hidden" id="node-config-input-creds_name">
     </div>
     <div class="form-row">
         <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-account_id"><i class="fa fa-university"></i> <span data-i18n="xively.creds.label.accountId"></span></label>
@@ -85,14 +116,6 @@
 
 <script type="text/x-red" data-template-name="xively-channel">
     <div class="form-row">
-        <label for="node-input-xively_creds"><i class="fa fa-user"></i> <span data-i18n="xively.label.xively-user-creds"></span></label>
-        <input type="text" id="node-input-xively_creds">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
         <label for="node-input-device_template"><i class="fa fa-hdd-o"></i> <span data-i18n="xively.label.device-type"></span></label>
         <select type="text" id="node-input-device_template" style="display: inline-block; vertical-align: middle; width:60%;">
         </select>
@@ -110,7 +133,14 @@
             <option value="json" data-i18n="xively.label.json"></option>
         </select>
     </div>
-    <input type="hidden" id="node-input-default_name">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name this node (optional)">
+    </div>
+    <div class="form-row" style="display:none;">
+        <input type="hidden" id="node-input-xively_creds">
+        <input type="hidden" id="node-input-default_name">
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="xively-channel">

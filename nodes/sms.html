@@ -14,61 +14,39 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="xi-sms-credentials">
-    <div class="form-row">
-        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-creds_name"><i class="fa fa-user"></i> Name</label>
-        <input type="text" id="node-config-input-creds_name">
-    </div>
-    <div class="form-row">
-        <label style="margin-left: 10px; margin-right: -10px;" for="node-config-input-api_key"><i class="fa fa-key"></i> Api Key</label>
-        <input type="password" id="node-config-input-api_key">
-    </div>
-</script>
-
-<script type="text/javascript">
-(function() {
-    RED.nodes.registerType('xi-sms-credentials',{
-        category: 'config',
-        defaults: {
-            creds_name: {value:"Api Key"}
-        },
-        credentials: {
-            creds_name: {type: "text"},
-            api_key: {type: "password"}
-        },
-        label: function() {
-            return this.creds_name;
-        },
-        exportable: false,
-        oneditsave: function() {
-        },
-        oneditcancel: function(adding) {
-        }
-    });
-})();
-</script>
-
 <script type="text/x-red" data-template-name="xi-sms out">
     <div class="form-row">
-        <label for="node-input-xi_sms_creds"><i class="fa fa-user"></i> <span data-i18n="xively.label.xively-user-creds"></span></label>
-        <input type="text" id="node-input-xi_sms_creds">
+        <label for="node-input-number_input_type"><i class="fa fa-arrow-right"></i> 
+            <span data-i18n="xively.label.to"></span>
+        </label>
+        <select id="node-input-number_input_type">
+            <option value="hardcoded" data-i18n="xively.label.set_hardcoded"></option>
+            <option value="property" data-i18n="xively.label.set_by_property"></option>
+        </select>
     </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+    <div class="form-row row-number_input_type" id="row-number_input_type_hardcoded">
+        <label for="node-input-number"><i class="fa fa-mobile"></i> <span data-i18n="xively.label.number"></span></label>
+        <input type="text" id="node-input-number" placeholder="(617)-555-1212">
     </div>
-    <div class="form-row">
-        <label for="node-input-number"><i class="fa fa-mobile"></i> Number</label>
-        <input type="text" id="node-input-number" placeholder="(978)-555-1212">
+    <div class="form-row row-number_input_type" id="row-number_input_type_property">
+        <span data-i18n="xively.label.property"></span> 
+        <input type="text" id="node-input-property" style="width: 300px;"/>
     </div>
     <input type="hidden" id="node-input-body" autofocus="autofocus">
     <div class="form-row node-text-editor-row">
         <div style="height: 125px;" class="node-text-editor" id="node-input-body-editor" ></div>
     </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" style="display:none;">
+        <input type="hidden" id="node-input-xively_creds">
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="xi-sms out">
-   <p>Sends an sms message to a phone.</p>
+   <p>Sends a text message to a phone.</p>
 </script>
 
 <script type="text/javascript">
@@ -76,9 +54,12 @@
         category: 'xively',    
         color:"#809fff",
         defaults: {            
-            xi_sms_creds: {type:"xi-sms-credentials",required:true},
             name: {value:""},   
+            xively_creds: {type:"xively-user-credentials",required:true},
+            number_input_type: {value:"hardcoded", required:true},
             number: {value:"", require:true},  
+            property: {value:"payload" },
+            propertyType: { value:"msg" },
             body: {value:"", required:true}
         },
         inputs:1,             
@@ -86,22 +67,36 @@
         icon: "inject.png",
         align: "right",    
         label: function() {    
-            return this.name||"Sms Out";
+            return this.name||"Txt Message";
         },
         labelStyle: function() { 
             return this.name?"node_label_italic":"";
         },
         paletteLabel: function() {
-          return "Sms Out";
+          return "Txt Message";
         },
         oneditprepare: function(){
+            var node = this;
             this.editor = RED.editor.createEditor({
                 id: 'node-input-body-editor',
                 mode: 'ace',
                 value: $("#node-input-body").val()
             });
+
+            $("#node-input-number_input_type").change(function() {
+                var id = $("#node-input-number_input_type option:selected").val();
+                $(".row-number_input_type").hide();
+                $("#row-number_input_type_"+id).show();
+            });
+
+            var id = $("#node-input-number_input_type option:selected").val();
+            $(".row-number_input_type").hide();
+            $("#row-number_input_type_"+id).show();
+
+            $("#node-input-property").typedInput({default:this.propertyType||'msg',types:['msg','flow','global']});
         },
         oneditsave: function() {
+            this.propertyType = $("#node-input-property").typedInput('type');
             $("#node-input-body").val(this.editor.getValue())
             delete this.editor;
         },

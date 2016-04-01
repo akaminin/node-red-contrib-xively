@@ -44,6 +44,22 @@ module.exports = function(RED) {
         }
     });
 
+    function OnWeekdaysFilterNode (config) {
+        RED.nodes.createNode(this,config);
+        var node = this;
+
+        node.on('input', function (msg) {
+            node.send(msg);
+        });
+
+        node.on("close", function() {
+            // Called when the node is shutdown 
+        });
+    }
+
+    RED.nodes.registerType("filter-on-weekdays", OnWeekdaysFilterNode);
+
+
     function XivelyChannelNode (config) {
         RED.nodes.createNode(this,config);
 
@@ -75,9 +91,9 @@ module.exports = function(RED) {
                 if(channelType.channelTemplateId == node.device_channel){
                     node.mqttClient.subscribe(channelType.channel, function(err, granted){
                         if(!err){
-                            //console.log("subscribed to: "+channelType.channel);
+                            RED.log.debug("subscribed to: "+channelType.channel);
                         }else{
-                            console.log("error subscribing: "+err);
+                            RED.log.error("error subscribing: "+err);
                         }
                     });
                 }
@@ -106,7 +122,7 @@ module.exports = function(RED) {
             });
 
             node.mqttClient.on('connect', function () {
-                console.log("mqttClient connected");
+                RED.log.debug("mqttClient connected");
             });
 
             node.mqttClient.on('message', onMqttMessage);
@@ -124,7 +140,7 @@ module.exports = function(RED) {
                 });
             });
         }).catch(function(err){
-            console.log("Error setting up XivelyInNode: " + err);
+            RED.log.error("Error setting up XivelyInNode: " + err);
         });
 
         node.on("close", function() {

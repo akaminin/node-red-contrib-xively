@@ -1,5 +1,5 @@
  /**
- * Copyright 2014 Atsushi Kojo.
+ * Copyright 2014 LogMeIn Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,76 +153,6 @@ module.exports = function (RED) {
       });
   });
 
-
-  // function ForceInNode(n) {
-  //   RED.nodes.createNode(this, n);
-  //   this.force = n.force;
-  //   this.sobject = n.sobject;
-  //   this.extname = n.extname;
-  //   this.operation = n.operation;
-  //   this.forceConfig = RED.nodes.getNode(this.force);
-  //   if (this.forceConfig) {
-  //     var node = this;
-  //     node.convType = function (payload, targetType) {
-  //       if (typeof payload !== targetType) {
-  //         if (targetType == 'string') {
-  //           payload = JSON.stringify(payload);
-  //         } else {
-  //           payload = JSON.parse(payload);
-  //         }
-  //       }
-  //       return payload;
-  //     };
-  //     node.on('input', function (msg) {
-  //       node.sendMsg = function (err, result) {
-  //         if (err) {
-  //           node.error(err.toString());
-  //           node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-  //         } else {
-  //           node.status({});
-  //         }
-  //         msg.payload = result;
-  //         node.send(msg);
-  //       };
-  //       this.forceConfig.login(function (conn, err) {
-  //         if(err){
-  //           node.sendMsg(err);
-  //           return;
-  //         }
-  //         switch (node.operation) {
-  //           case 'query':
-  //             msg.payload = node.convType(msg.payload, 'string');
-  //             conn.query(msg.payload, node.sendMsg);
-  //             break;
-  //           case 'create':
-  //             msg.payload = node.convType(msg.payload, 'object');
-  //             conn.sobject(node.sobject)
-  //               .create(msg.payload, node.sendMsg);
-  //             break;
-  //           case 'update':
-  //             msg.payload = node.convType(msg.payload, 'object');
-  //             conn.sobject(node.sobject)
-  //               .update(msg.payload, node.sendMsg);
-  //             break;
-  //           case 'upsert':
-  //             msg.payload = node.convType(msg.payload, 'object');
-  //             conn.sobject(node.sobject)
-  //               .upsert(msg.payload, node.extname, node.sendMsg);
-  //             break;
-  //           case 'delete':
-  //             msg.payload = node.convType(msg.payload, 'object');
-  //             conn.sobject(node.sobject)
-  //               .destroy(msg.payload, node.sendMsg);
-  //             break;
-  //         }
-  //       }, msg);
-  //     });
-  //   } else {
-  //     this.error('missing force configuration');
-  //   }
-  // }
-  //RED.nodes.registerType('force in', ForceInNode);
-
   function ForceCreateCaseNode(n) {
     RED.nodes.createNode(this, n);
     this.salesforce = n.salesforce;
@@ -246,36 +176,36 @@ module.exports = function (RED) {
         return payload;
       };
       node.on('input', function (msg) {
-        node.sendMsg = function (err, result) {
-          if (err) {
-            node.error(err.toString());
-            node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-          } else {
-            node.status({});
-          }
-          msg.payload = result;
-          node.send(msg);
-        };
-        this.forceConfig.login(function (conn, err) {
-          if(err){
-            node.sendMsg(err);
-            return;
-          }
+        // node.sendMsg = function (err, result) {
+        //   if (err) {
+        //     node.error(err.toString());
+        //     node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+        //   } else {
+        //     node.status({});
+        //   }
+        //   msg.payload = result;
+        //   node.send(msg);
+        // };
+        // this.forceConfig.login(function (conn, err) {
+        //   if(err){
+        //     node.sendMsg(err);
+        //     return;
+        //   }
 
-          var post_obt = {};
+        //   var post_obt = {};
 
-          post_obt.subject = node.subject || msg.payload.subject;
-          post_obt.description = node.description || msg.payload.description;
-          post_obt.priority = node.priority || msg.payload.priority;
+        //   post_obt.subject = node.subject || msg.payload.subject;
+        //   post_obt.description = node.description || msg.payload;
+        //   post_obt.priority = node.priority || msg.payload.priority;
 
-          //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
-          //post_obt.Asset = {xively__Device_ID__c: msg.topicMeta.deviceId};
-          post_obt.xively__XI_Device_ID__c = msg.topicMeta.deviceId;
+        //   //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
+        //   //post_obt.Asset = {xively__Device_ID__c: msg.topicMeta.deviceId};
+        //   post_obt.xively__XI_Device_ID__c = msg.topicMeta.deviceId;
 
-          post_obt = node.convType(post_obt, 'object');
-          conn.sobject(node.sobject)
-                .create(post_obt, node.sendMsg);
-        }, msg);
+        //   post_obt = node.convType(post_obt, 'object');
+        //   conn.sobject(node.sobject)
+        //         .create(post_obt, node.sendMsg);
+        // }, msg);
       });
     } else {
       this.error('missing salesforce configuration');

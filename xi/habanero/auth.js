@@ -14,7 +14,11 @@ var idm = require('../services/idm');
 var blueprint = require('../services/blueprint');
 var habaneroSettings = require('./settings');
 
-var RED = require("../../../../red/runtime");
+try{
+    var RED = require("../../../../red/runtime");
+}catch(err){
+    console.error("Unable to import RED runtime");
+}
 
 
 var cachedJwts = {};

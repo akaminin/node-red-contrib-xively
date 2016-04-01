@@ -1,0 +1,11 @@
+{
+    "xively": {
+        "label": {
+            "to":"To",
+            "set_hardcoded":"Number set below",
+            "set_by_property": "Number from property",
+            "number":"Number",
+            "property":"Property"
+        }
+    }
+}
