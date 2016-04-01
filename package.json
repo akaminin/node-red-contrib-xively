@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattotodd/node-red-contrib-xively.git"
+    "url": "git+https://github.com/xively/node-red-contrib-xively.git"
   },
   "keywords": [
     "npm",
@@ -21,9 +21,9 @@
   "author": "XTAG <fdumlao@logmein.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mattotodd/node-red-contrib-xively/issues"
+    "url": "https://github.com/xively/node-red-contrib-xively/issues"
   },
-  "homepage": "https://github.com/mattotodd/node-red-contrib-xively#readme",
+  "homepage": "https://github.com/xively/node-red-contrib-xively#readme",
   "node-red": {
     "nodes": {
       "xively-channel": "nodes/xivelyChannel.js",
