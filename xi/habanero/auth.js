@@ -148,8 +148,23 @@ var loginUser = function(username, password, accountId){
     return idm.auth.loginUser(username, password, accountId);
 };
 
+var isAccountUser = function(jwt){
+    return when.promise(function(resolve, reject) {
+        var jwtParts = jwt.split('.');
+        var jwtJsonStr = new Buffer(jwtParts[1], 'base64').toString('ascii');
+        var jwtInfo = JSON.parse(jwtJsonStr);
+
+        blueprint.accountUsers.get(jwtInfo.accountId, jwt, jwtInfo.userId).then(function(getUserResp){
+            resolve((getUserResp.accountUsers.results.length > 0));
+        }).catch(function(err){
+            reject(err);
+        });
+    });
+};
+
 module.exports = {
     loginUser:loginUser,
+    isAccountUser : isAccountUser,
     getJwtForCredentialsId: getJwtForCredentialsId,
     setupHabaneroAuth: setupHabaneroAuth
 };

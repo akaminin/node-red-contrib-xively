@@ -22,38 +22,53 @@ module.exports = {
         var accountId   = requestBody["accountId"];
         var appId       = requestBody["appId"];
         var accessToken = requestBody["accessToken"];
+        var loggedInUserJwt;
         return when.promise(function(resolve) {
             habaneroSettings.get().then(function(hSettings) {
+                // if we have valid habanero settings
+                // use the settings.accountId for login attempts
                 var habaneroIsSetup = hSettings !== null;
                 if (habaneroIsSetup) {
                     accountId = hSettings.accountId;
                 }
 
                 auth.loginUser(username, password, accountId).then(function(loginResp) {
-                    if (loginResp === null) {
-                        //error logging in
+                    if (loginResp === null || !loginResp.hasOwnProperty('jwt')) {
+                        // error logging in
                         resolve(null);
-                    } else {
-                        //login successfull
-                        var resolveLogin = function() {
-                            var user = {
-                                username: username,
-                                permissions: "*"
-                            };
-                            resolve(user);
+                    }
+                    // login successfull
+                    loggedInUserJwt = loginResp["jwt"];
+                    // verify its an account-user
+                    return auth.isAccountUser(loggedInUserJwt);
+                }).then(function(isAccountUser){
+                    if(!isAccountUser){
+                        // account-user required
+                        // failed login
+                        resolve(null);
+                    }
+
+                    // valid account-user
+                    
+                    var resolveLogin = function() {
+                        var user = {
+                            username: username,
+                            permissions: "*"
                         };
-                        if (!habaneroIsSetup) {
-                            // need to setup habanero creds
-                            auth.setupHabaneroAuth(loginResp["jwt"], accountId, appId, accessToken, requestBody)
-                                .then(resolveLogin)
-                                .catch(function(err) {
-                                    console.log("Unable to setup Xi Crednetials");
-                                    resolve(null);
-                                });
-                        } else {
-                            // habanero is already setup, resolve the login
-                            resolveLogin();
-                        }
+                        resolve(user);
+                    };
+                    
+                    if (!habaneroIsSetup) {
+                        // need to setup habanero creds
+                        auth.setupHabaneroAuth(loggedInUserJwt, accountId, appId, accessToken, requestBody)
+                            .then(resolveLogin)
+                            .catch(function(err) {
+                                console.log("Unable to setup Xi Credentials");
+                                resolve(null);
+                            });
+                    } else {
+                        // habanero is already setup, resolve the login
+                        resolveLogin();
                     }
                 });
             });

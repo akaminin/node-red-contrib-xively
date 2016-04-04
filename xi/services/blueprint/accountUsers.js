@@ -3,8 +3,7 @@ var request = require('request');
 
 var BLUEPRINT_BASE_URL = "https://blueprint.demo.xively.com/api/v1/";
 
-
-var getAccountUsers = function(accountId, jwt) {
+var getAccountUsers = function(accountId, jwt, userId) {
     return when.promise(function(resolve) {
         request.get({
           url: BLUEPRINT_BASE_URL+'account-users', 
@@ -12,7 +11,9 @@ var getAccountUsers = function(accountId, jwt) {
             Authorization: "Bearer "+ jwt
           },
           qs:{
-            accountId: accountId
+            accountId: accountId,
+            userId: userId
+
           }
         },
         function(err,httpResponse,body){ 
