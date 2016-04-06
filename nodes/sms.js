@@ -43,7 +43,7 @@ module.exports = function(RED) {
             number = number.replace(/\D/g,'');
             //must start with a 1
             if(!number.startsWith('1')){
-                number = '1' + number;
+                number = '1' + number;  
             }
             //must start with a plus sign
             number = '+' + number;

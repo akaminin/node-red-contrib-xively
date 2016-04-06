@@ -164,4 +164,15 @@ module.exports = function(RED) {
             res.json([err]);
         });
     });
+
+    RED.httpAdmin.get('/xively/orgs/:id', RED.auth.needsPermission(""), function(req, res, next) {
+        xiRed.habanero.auth.getJwtForCredentialsId(req.params.id).then(function(jwtConfig){
+            blueprint.organizations.get(jwtConfig.account_id, jwtConfig.jwt, req.query.parentId, req.query.page).then(function(dOrgsResp){
+                res.json(dOrgsResp.organizations.results);
+            });
+        }).catch(function(err){
+            console.log(err);
+            res.json([err]);
+        });
+    });
 }

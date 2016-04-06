@@ -7,19 +7,18 @@
             "select-device-type":"Select a device type...",
             "channel-type": "Channel",
             "select-channel-type": "Select a channel type...",
+            "org-filter": "Organization",
+            "select-org-filter": "Filter by organization...",
+            "remove-org-filter": "Remove org filter...",
+            "sub-org-filter": "Sub Org",
+            "select-sub-org-filter": "Choose sub org...",
             "account-id": "Account Id",
             "access-token": "Access Token",
             "register": "Register to get your credentials at",
             "xively-user-creds": "Xively Creds",
-            "payload-format":"Payload Format",
+            "payload-format":"Payload",
             "raw":"Raw",
-            "json":"JSON",
-
-            "value":"When",
-                "value-unit": "hours",
-                "repeat":"Repeat",
-                "repeat-unit":"minutes",
-                "repeat-info":"<b>Note:</b> Repeat is the minimum amount of time before this will trigger again."
+            "json":"JSON"
         },
         "creds":{
             "label":{

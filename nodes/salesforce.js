@@ -176,36 +176,36 @@ module.exports = function (RED) {
         return payload;
       };
       node.on('input', function (msg) {
-        // node.sendMsg = function (err, result) {
-        //   if (err) {
-        //     node.error(err.toString());
-        //     node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-        //   } else {
-        //     node.status({});
-        //   }
-        //   msg.payload = result;
-        //   node.send(msg);
-        // };
-        // this.forceConfig.login(function (conn, err) {
-        //   if(err){
-        //     node.sendMsg(err);
-        //     return;
-        //   }
+        node.sendMsg = function (err, result) {
+          if (err) {
+            node.error(err.toString());
+            node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+          } else {
+            node.status({});
+          }
+          msg.payload = result;
+          node.send(msg);
+        };
+        this.forceConfig.login(function (conn, err) {
+          if(err){
+            node.sendMsg(err);
+            return;
+          }
 
-        //   var post_obt = {};
+          var post_obt = {};
 
-        //   post_obt.subject = node.subject || msg.payload.subject;
-        //   post_obt.description = node.description || msg.payload;
-        //   post_obt.priority = node.priority || msg.payload.priority;
+          post_obt.subject = node.subject || msg.payload.subject;
+          //post_obt.description = node.description || msg.payload;
+          post_obt.priority = node.priority || msg.payload.priority;
 
-        //   //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
-        //   //post_obt.Asset = {xively__Device_ID__c: msg.topicMeta.deviceId};
-        //   post_obt.xively__XI_Device_ID__c = msg.topicMeta.deviceId;
+          //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
+          //post_obt.Asset = {xively__Device_ID__c: msg.topicMeta.deviceId};
+          post_obt.xively__XI_Device_ID__c = msg.topicMeta.deviceId;
 
-        //   post_obt = node.convType(post_obt, 'object');
-        //   conn.sobject(node.sobject)
-        //         .create(post_obt, node.sendMsg);
-        // }, msg);
+          post_obt = node.convType(post_obt, 'object');
+          conn.sobject(node.sobject)
+                .create(post_obt, node.sendMsg);
+        }, msg);
       });
     } else {
       this.error('missing salesforce configuration');
