@@ -35,8 +35,9 @@ module.exports = {
                 auth.loginUser(username, password, accountId).then(function(loginResp) {
                     if (loginResp === null || !loginResp.hasOwnProperty('jwt')) {
                         // error logging in
-                        resolve(null);
+                        return resolve(null);
                     }
+
                     // login successfull
                     loggedInUserJwt = loginResp["jwt"];
                     // verify its an account-user
