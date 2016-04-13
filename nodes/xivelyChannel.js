@@ -99,25 +99,14 @@ module.exports = function(RED) {
                 }
             });
         }
-        var jwtConfig;
-
         //begin by going and getting a JWT for idm user
-        xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtResp){
-            jwtConfig = jwtResp;
-            //get mqtt creds for account-user
-            return blueprint.accessMqttCredentials.create(
-                jwtConfig.account_id, 
-                jwtConfig.jwt,
-                "accountUser",
-                credentials.account_user_id
-            );
-        }).then(function(mqttCreateResp){
+        xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtConfig){
             //setup mqttClient
             node.mqttClient = mqtt.connect("mqtts://",{
                   host: "broker.demo.xively.com",
                   port: Number(8883),
                   username: credentials.account_user_id,
-                  password: mqttCreateResp.mqttCredential.secret,
+                  password: credentials.mqtt_secret,
                   debug: true
             });
 

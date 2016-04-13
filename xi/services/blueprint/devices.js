@@ -1,12 +1,13 @@
 var when = require("when");
 var request = require('request');
 
-var BLUEPRINT_BASE_URL = "https://blueprint.demo.xively.com/api/v1/";
+var getApiRoot = require('../util').getApiRoot;
+var BLUEPRINT_BASE_URL = getApiRoot('xively.services.blueprint');
 
-var getDevices = function(accountId, jwt) {
+var getDevice = function(accountId, jwt, deviceId) {
     return when.promise(function(resolve) {
         request.get({
-          url: BLUEPRINT_BASE_URL+'devices/templates', 
+          url: BLUEPRINT_BASE_URL+'devices/'+deviceId, 
           headers: {
             Authorization: "Bearer "+ jwt
           },
@@ -15,6 +16,26 @@ var getDevices = function(accountId, jwt) {
           }
         },
         function(err,httpResponse,body){ 
+          var resp = JSON.parse(body);
+          resolve(resp);
+        });
+    });
+};
+
+var getDevices = function(accountId, jwt) {
+    return when.promise(function(resolve) {
+        request.get({
+          url: BLUEPRINT_BASE_URL+'devices', 
+          headers: {
+            Authorization: "Bearer "+ jwt
+          },
+          qs:{
+            accountId: accountId
+          }
+        },
+        function(err,httpResponse,body){ 
+          console.log(err);
+          console.log(httpResponse);
           var resp = JSON.parse(body);
           resolve(resp);
         });
@@ -44,5 +65,6 @@ var getDevicesByDeviceTemplateId = function(accountId, jwt, deviceTemplateId, pa
 
 module.exports = {
     get: getDevices,
-    getByDeviceTemplateId: getDevicesByDeviceTemplateId
+    getByDeviceTemplateId: getDevicesByDeviceTemplateId,
+    getDevice: getDevice
 };

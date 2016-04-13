@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 LogMeIn Inc
+  Copyright 2016 LogMeIn Inc
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,32 +13,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-
-<script type="text/x-red" data-template-name="xi-org-filter">
-    <p>Only forward msg if its a weekday.</p>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('xi-org-filter',{
-        category: 'config',    
-        defaults: {            
-            name: {value:""}
-        },
-        inputs:1,             
-        outputs:1,              
-        icon: "function.png",    
-        label: function() {    
-            return this.name||"On Weekdays";
-        },
-        labelStyle: function() { 
-            return this.name?"node_label_italic":"";
-        },
-        paletteLabel: function() {
-          return "On Weekdays";
-        }
-    });
-</script>
-
 
 <script type="text/x-red" data-template-name="xively-user-credentials">
     <div class="form-row" id="node-config-xively-user-credentials-row">
@@ -122,19 +96,6 @@
                 <option data-i18n="xively.label.select-channel-type"></option>
             </select>
         </div>
-        <div id="org_filter" class="form-row">
-            <label for="node-input-org_filter"><i class="fa fa-filter "></i> <span data-i18n="xively.label.org-filter"></span></label>
-            <select type="text" id="node-input-org_filter" style="display: inline-block; vertical-align: middle; width:60%;">
-                <option data-i18n="xively.label.select-org-filter"></option>
-            </select>
-        </div>
-        <div id="sub_org_filter_row" class="form-row" style="display:none;" >
-            <label for="node-input-sub_org_filter"><i class="fa fa-filter "></i> <span data-i18n="xively.label.sub-org-filter"></span></label>
-            <i class="fa fa-arrow-down "></i></span>
-            <select type="text" id="node-input-sub_org_filter" style="display: inline-block; vertical-align: middle; width:55%;">
-                <option data-i18n="xively.label.select-sub-org-filter"></option>
-            </select>
-        </div>
         <div id="payload_format" class="form-row">
             <label for="node-input-payload_format"><i class="fa fa-code "></i> <span data-i18n="xively.label.payload-format"></span></label>
             <select type="text" id="node-input-payload_format" style="display: inline-block; vertical-align: middle; width:60%;">
@@ -171,9 +132,7 @@
             default_name: {value:""},
             device_template: {value:"", required:true},
             device_channel: {value:"", required:true},
-            payload_format: {value:"raw", required:true},
-            org_filter: {value:""},
-            org_ancestry: {value:""},
+            payload_format: {value:"raw", required:true}
         },
         inputs:1,             
         outputs:1,              
@@ -209,6 +168,7 @@
             var selectSubOrgFilterMsg = this._("xively.label.select-sub-org-filter");
 
             var xively_creds = this.xively_creds;
+
             var device_template = this.device_template;
             var device_channel = this.device_channel;
             var org_filter = this.org_filter;
@@ -259,124 +219,14 @@
                 }
             }
 
-            function setupOrgFilters(){
-                return new Promise(function(resolve, reject) { 
-                    function complete(){
-                        orgFilterInput.prop('disabled', false).removeClass("input-error");
-                        orgFilterInput.on("change", onOrgFilterChange);
-                        resolve();
-                    }
-
-                    orgFilterInput.off("change", onOrgFilterChange);
-                    orgFilterInput.empty();
-                    
-                    if(org_ancestry.length > 0 && org_filter !== ""){
-                        orgFilterInput.append(new Option(removeOrgFilterMsg, ""));
-                        // draw ancestry
-                        $.each(org_ancestry, function(i, ancester){
-                            var orgName = ancester.name;
-                            if(i > 0){
-                                orgName = Array(i+1).join("&nbsp;&nbsp;")+"> "+ancester.name;
-                            }
-                            var selected = (ancester.id == org_filter);
-                            var option = new Option(
-                                orgName, 
-                                ancester.id,
-                                selected,
-                                selected
-                            );
-                            option.innerHTML = orgName;
-                            orgFilterInput.append(option);
-                        });
-                        setupSubOrgFilters(org_filter);
-                        complete();
-                    }else{
-                        orgFilterInput.append(new Option(selectOrgFilterMsg, ""));
-                        //go get high level orgs
-                        $.getJSON('xively/orgs/'+xively_creds,function(orgs) {
-                            $.each(orgs, function(i, org){
-                                orgFilterInput.append(new Option(org.name, org.id));
-                            });
-                            complete();
-                        });
-                    }
-                });
-            }
-
-            function onOrgFilterChange(e){
-                var currentVal = orgFilterInput.val();
-                var optionsLength = orgFilterInput.find('option').length;
-                var selectedLabel = orgFilterInput.find('option:selected').text();
-                var selectedIndex = orgFilterInput.prop('selectedIndex');
-                if(currentVal == "" || currentVal == null){
-                    // removing all org filters
-                    if(org_ancestry.length > 0){
-                        // clear out old ancestry
-                        orgAncestryInput.val("[]");
-                        org_ancestry = [];
-                        setupOrgFilters();
-                    }
-                    subOrgFilterRow.slideUp();
-                }else if(org_ancestry.length > 0 && selectedIndex < optionsLength){
-                    // moving up the org tree
-                    orgFilterInput.find('option').each(function(i){
-                        if(i > selectedIndex){
-                            $(this).remove();
-                        }
-                    });
-                    org_filter = currentVal;
-                    org_ancestry.splice(selectedIndex);
-                    orgAncestryInput.val(JSON.stringify(org_ancestry));
-                    setupOrgFilters();
-
-                }else{
-                    // moving down the tree
-                    org_filter = currentVal;
-                    var newOrgFilter = {id:currentVal, name:selectedLabel};
-                    org_ancestry.push(newOrgFilter);
-                    orgAncestryInput.val(JSON.stringify(org_ancestry));
-                    setupOrgFilters();
-                }
-
-            }
-
-            function setupSubOrgFilters(parentId){
-                $.getJSON('xively/orgs/'+xively_creds+"?parentId="+parentId, function(subOrgs) {
-                    console.log(subOrgs);
-                    subOrgFilterInput.off("change", onSubOrgFilterChange);
-                    if(subOrgs.length == 0){
-                        subOrgFilterRow.slideUp();
-                    }else{
-                        subOrgFilterInput.empty();
-                        subOrgFilterInput.append(new Option(selectSubOrgFilterMsg, ""));
-                        $.each(subOrgs, function(i, subOrg){
-                            subOrgFilterInput.append(new Option(subOrg.name, subOrg.id));
-                        });
-                        subOrgFilterInput.on("change", onSubOrgFilterChange);
-                        subOrgFilterRow.slideDown();
-                    }
-                });
-            }
-
-            function onSubOrgFilterChange(e){
-                var currentVal = subOrgFilterInput.val();
-                if(currentVal == "" || currentVal == null){ return; }
-                var selectedLabel = subOrgFilterInput.find('option:selected').text();
-                org_filter = currentVal;
-                var newOrgFilter = {id:currentVal, name:selectedLabel};
-                org_ancestry.push(newOrgFilter);
-                orgAncestryInput.val(JSON.stringify(org_ancestry));
-                setupOrgFilters();
-            }
-
-
             function onXivelyCredsInputChange(e){
                 var currentVal = xivelyCredsInput.val();
                 if(currentVal == "" || currentVal == "_ADD_"){
                     deviceTemplateInput.prop('disabled', 'disabled');
                     channelInput.prop('disabled', 'disabled');
                 }else{
-                    setupDeviceTemplates(currentVal);
+                    xively_creds = currentVal;
+                    setupDeviceTemplates();
                 }
             }
 
@@ -387,7 +237,7 @@
                     channelInput.append(new Option(selectChannelTypeMsg, ""));
                     channelInput.prop('disabled', 'disabled');
                 }else{
-                    setupChannelTemplates(currentVal);
+                    setupChannelTemplates();
                 }
             }
 
@@ -415,11 +265,10 @@
                 }
             }
 
-            if (!this.xively_creds || this.xively_creds === "") {
+            if (!xively_creds || xively_creds === "") {
                 deviceTemplateInput.prop('disabled', 'disabled');
             }else{
-                setupDeviceTemplates(this.xively_creds);
-                setupOrgFilters();
+                setupDeviceTemplates();
             }
 
             if (!this.device_template || this.device_template === "") {

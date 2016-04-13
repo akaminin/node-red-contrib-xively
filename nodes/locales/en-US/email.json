@@ -1,0 +1,13 @@
+{
+    "xively": {
+        "label": {
+            "to":"To",
+            "set_hardcoded":"Address set below",
+            "set_by_property": "Address from property",
+            "email":"Email",
+            "subject":"Subject",
+            "include_device_data":"Include Device Information",
+            "property":"Property"
+        }
+    }
+}

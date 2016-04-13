@@ -24,7 +24,9 @@ module.exports = function(RED) {
     var mustache = require('mustache');
 
     var xiRed = require('../');
-    var SEND_SMS_POST_URL = 'https://xi-ext-services.herokuapp.com/api/v1/sms';
+    var util = require("../xi/services/util");
+    
+    var SEND_SMS_POST_URL = util.getApiRoot('xively.habanero-proxy')+'sms';
 
     function XivelySmsOutNode (config) {
         RED.nodes.createNode(this,config);
@@ -80,10 +82,6 @@ module.exports = function(RED) {
                 toNumber = RED.util.evaluateNodeProperty(node.property,node.propertyType,node,msg);
             }
             sendSms(toNumber, renderedBody);
-        });
-
-        node.on('close', function() {
-            // Called when the node is shutdown 
         });
     }
 

@@ -1,7 +1,8 @@
 var when = require("when");
 var request = require('request');
+var getApiRoot = require('../util').getApiRoot;
 
-var IDM_BASE_URL = "https://id.demo.xively.com/api/v1/";
+var IDM_BASE_URL = getApiRoot('xively.services.idm');
 
 function validateJwt(accessToken, jwt) {
     return when.promise(function(resolve) {

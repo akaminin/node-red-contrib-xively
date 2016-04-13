@@ -21,7 +21,9 @@ module.exports = function(RED) {
     var when = require("when");
 
     var xiRed = require('../');
-    var WEATHER_DATA_URL = 'https://xi-ext-services.herokuapp.com/api/v1/weather';
+    var util = require("../xi/services/util");
+
+    var WEATHER_DATA_URL = util.getApiRoot('xively.habanero-proxy')+'weather';
 
     function apiRespDataToWeatherInfo(respData, dataRow){
         console.log(dataRow);

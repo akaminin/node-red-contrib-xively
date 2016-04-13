@@ -31,14 +31,14 @@ var getJwtForCredentialsId = function(credentialsId){
             //check if its been 15 minutes since getting jwt
             var expiration = new Date(jwtConfig.obtained.getTime() + 15*60000);
             if(now < expiration){
-                resolve(cachedJwts[credentialsId]);
+                return resolve(cachedJwts[credentialsId]);
             }
         }
         //need to go log in with credentials
         var creds = RED.nodes.getCredentials(credentialsId);
         loginUser(creds.username, creds.password, creds.account_id).then(function(loginResp){
             if(loginResp == null){
-                reject("Error loggin in with user: "+creds.username);
+                return reject("Error loggin in with user: "+creds.username);
             }
             //cache the result
             cachedJwts[credentialsId] = {
@@ -46,9 +46,9 @@ var getJwtForCredentialsId = function(credentialsId){
                 jwt: loginResp["jwt"],
                 account_id: creds.account_id
             };
-            resolve(cachedJwts[credentialsId]);
+            return resolve(cachedJwts[credentialsId]);
         }).catch(function(err){
-            reject("Unkown error: "+err);
+            return reject("Unkown error: "+err);
         });
     });
 
@@ -130,12 +130,26 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
                 username: idmUser.email,
                 password: idmUser.password
             };
+
             return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId);
+
         }).then(function(createAccountUserResp){
             habaneroIdmUserCreds.account_user_id = createAccountUserResp.accountUser.id;
+
+            return blueprint.accessMqttCredentials.create(
+                xiAccountId, 
+                jwt,
+                "accountUser",
+                habaneroIdmUserCreds.account_user_id);
+
+        }).then(function(mqttCreateResp){
+            habaneroIdmUserCreds.mqtt_secret = mqttCreateResp.mqttCredential.secret;
+
             return setupDefaultFlows(habaneroIdmUserCreds, requestBody);
+
         }).then(function(){
             RED.log.info("Successfully setup habanero user: "+habaneroIdmUserCreds.username);
+
             return resolve(habaneroIdmUserCreds);
         }).catch(function(err){
             console.log("setupXiAuth err: "+err);

@@ -1,7 +1,8 @@
 var when = require("when");
 var request = require('request');
 
-var BLUEPRINT_BASE_URL = "https://blueprint.demo.xively.com/api/v1/";
+var getApiRoot = require('../util').getApiRoot;
+var BLUEPRINT_BASE_URL = getApiRoot('xively.services.blueprint');
 
 var getAccountUsersTemplates = function(accountId, jwt) {
     return when.promise(function(resolve) {

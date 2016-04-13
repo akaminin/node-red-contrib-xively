@@ -27,13 +27,16 @@
   "node-red": {
     "nodes": {
       "xively-channel": "nodes/xivelyChannel.js",
+      "xively-device-rule": "nodes/deviceRule.js",
       "filter-warning": "nodes/filterWarning.js",
       "salesforce": "nodes/salesforce.js",
+      "email": "nodes/email.js",
       "sms": "nodes/sms.js",
       "weather": "nodes/weather.js"
     }
   },
   "dependencies": {
+    "config": "^1.20.1",
     "jsforce": "^1.6.0",
     "lodash": "^4.6.1",
     "mqtt": "^1.7.4",

@@ -2,22 +2,20 @@ var when = require("when");
 var request = require('request');
 
 var getApiRoot = require('../util').getApiRoot;
-var BLUEPRINT_BASE_URL = getApiRoot('xively.services.blueprint');
+var TIMESERIES_BASE_URL = getApiRoot('xively.services.timeseries');
 
-
-var getOrganizations = function(accountId, jwt, parentId, page, pageSize) {
+var getActivityStream= function(accountId, jwt, userId) {
     return when.promise(function(resolve) {
+    	var url = TIMESERIES_BASE_URL + topic + '/latest';
         request.get({
-          url: BLUEPRINT_BASE_URL+'organizations', 
+          url: url, 
           headers: {
             Authorization: "Bearer "+ jwt
           },
           qs:{
             accountId: accountId,
-            count: "children",
-            parentId: parentId || "null",
-            page: page || 1,
-            pageSize: pageSize || 100
+            userId: userId
+
           }
         },
         function(err,httpResponse,body){ 
@@ -27,7 +25,3 @@ var getOrganizations = function(accountId, jwt, parentId, page, pageSize) {
   });
 };
 
-
-module.exports = {
-    get: getOrganizations
-};

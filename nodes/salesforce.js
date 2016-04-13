@@ -1,5 +1,5 @@
  /**
- * Copyright 2014 LogMeIn Inc.
+ * Copyright 2016 LogMeIn Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,7 +195,7 @@ module.exports = function (RED) {
           var post_obt = {};
 
           post_obt.subject = node.subject || msg.payload.subject;
-          //post_obt.description = node.description || msg.payload;
+          post_obt.description = node.description || JSON.stringify(msg.payload);
           post_obt.priority = node.priority || msg.payload.priority;
 
           //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
