@@ -20,6 +20,7 @@
 module.exports = function(RED) {
     "use strict";
     // require any external libraries we may need....
+    var merge = require("merge");
 
     var xiRed = require("../");
     var util = xiRed.habanero.util;
@@ -78,12 +79,12 @@ module.exports = function(RED) {
             if(node.payload_format == "json"){
                 payload = util.format.tSDataToJSON(payload);
             }
+            var msg = merge(
+                {topic: topic, payload: payload},
+                util.regex.topicToObject(topic)
+            );
 
-            node.send({
-                topic: topic,
-                topicMeta: util.regex.topicToObject(topic),
-                payload: payload
-            });
+            node.send(msg);
         }
 
         function deviceSubscribe(device){

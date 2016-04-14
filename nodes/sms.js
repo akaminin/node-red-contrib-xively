@@ -24,9 +24,9 @@ module.exports = function(RED) {
     var mustache = require('mustache');
 
     var xiRed = require('../');
-    var util = require("../xi/services/util");
+    var getApiRoot = require('../xi/config').getApiRoot;
     
-    var SEND_SMS_POST_URL = util.getApiRoot('xively.habanero-proxy')+'sms';
+    var SEND_SMS_POST_URL = getApiRoot('xively.habanero-proxy')+'sms';
 
     function XivelySmsOutNode (config) {
         RED.nodes.createNode(this,config);

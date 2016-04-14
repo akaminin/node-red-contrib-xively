@@ -1,7 +1,7 @@
 var when = require("when");
 var request = require('request');
 
-var getApiRoot = require('../util').getApiRoot;
+var getApiRoot = require('../../config').getApiRoot;
 var BLUEPRINT_BASE_URL = getApiRoot('xively.services.blueprint');
 
 var getDevice = function(accountId, jwt, deviceId) {

@@ -21,12 +21,11 @@ module.exports = function(RED) {
     var when = require("when");
 
     var xiRed = require('../');
-    var util = require("../xi/services/util");
+    var getApiRoot = require('../xi/config').getApiRoot;
 
-    var WEATHER_DATA_URL = util.getApiRoot('xively.habanero-proxy')+'weather';
+    var WEATHER_DATA_URL = getApiRoot('xively.habanero-proxy')+'weather';
 
     function apiRespDataToWeatherInfo(respData, dataRow){
-        console.log(dataRow);
         var jsun = respData.weather;
         var weather = {data:jsun};
         weather.slug = jsun.daily.data[dataRow].icon;

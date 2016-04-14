@@ -19,6 +19,9 @@
 
 module.exports = function(RED) {
     "use strict";
+
+    var merge = require("merge");
+
     var operators = {
         'eq': function(a, b) { return a == b; },
         'neq': function(a, b) { return a != b; },
@@ -96,11 +99,11 @@ module.exports = function(RED) {
 
             payload = util.format.tSDataToJSON(payload);
 
-            var msg = {
-                topic: topic,
-                topicMeta: util.regex.topicToObject(topic),
-                payload: payload
-            };
+            var msg = merge(
+                {topic: topic, payload: payload},
+                util.regex.topicToObject(topic)
+            );
+
             evaluateRules(msg);
         }
 
@@ -128,7 +131,6 @@ module.exports = function(RED) {
                             // first rule, get value from msg
                             if(rule.sv == "value"){
                                 var cKeys = Object.keys(msg.payload);
-                                console.log(cKeys);
                                 if(cKeys.length > 1){
                                     RED.log.warn("Input set to value, but channel has multiple values.");   
                                 }
@@ -168,7 +170,6 @@ module.exports = function(RED) {
                     if (rule.t == "else") { test = elseflag; elseflag = true; }
                     if (operators[rule.t](test,v1,v2,rule.case)) {
                         if(node.matchall == true && i+1<node.rules.length){
-                            console.log("continue")
                             continue;
                         }
                         //done

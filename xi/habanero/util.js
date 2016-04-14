@@ -1,6 +1,11 @@
+var when = require("when");
+
+var blueprint = require("../services/blueprint");
+
 var topicRegEx = /xi\/blue\/v1\/([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})\/d\/([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})\/([0-9a-zA-Z_-]*)/i;
 
 var tSDataToJSON = function(tsData){
+	// takes timeseries data and converts to object form
     var lines = tsData.split("\n");
 	var data = {};
 	for(var i=0;i<lines.length;i++){
@@ -23,15 +28,38 @@ var tSDataToJSON = function(tsData){
 }
 
 var topicToObject = function(topicStr){
+	// take a xively mqtt topic and extracts info to obejct form
 	var matches = topicStr.match(topicRegEx);
 	if(matches === null){
 		return null
 	}
 	return {
-		accountId:matches[1],
-		deviceId:matches[2],
-		channelName:matches[3]
+		account:{id:matches[1]},
+		device:{id:matches[2]},
+		channel:{channelTemplateName:matches[3]}
 	}
+}
+
+var ensureMsgHasDeviceInfo = function(jwt, msg){
+	return when.promise(function(resolve, reject) {
+		// quick and dirty way to see if we've already have retrieved device info
+		if(msg.device.hasOwnProperty('created')){
+			return resolve(msg);
+		}
+		try{
+            var acctId = msg.account.id;
+            var devId = msg.device.id;
+            blueprint.devices.getDevice(acctId, jwt, devId).then(function(devResp){
+                msg.device = devResp.device;
+                resolve(msg);
+            }).catch(function(err){
+                throw err;
+            });
+        }catch(err){
+            return reject(err);
+        }
+	});
+
 }
 
 
@@ -41,5 +69,6 @@ module.exports = {
 	},
     format: {
     	tSDataToJSON: tSDataToJSON
-    }
+    },
+    ensureMsgHasDeviceInfo: ensureMsgHasDeviceInfo
 }

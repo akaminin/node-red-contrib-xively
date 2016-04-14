@@ -199,8 +199,8 @@ module.exports = function (RED) {
           post_obt.priority = node.priority || msg.payload.priority;
 
           //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
-          //post_obt.Asset = {xively__Device_ID__c: msg.topicMeta.deviceId};
-          post_obt.xively__XI_Device_ID__c = msg.topicMeta.deviceId;
+          //post_obt.Asset = {xively__Device_ID__c: msg.device.id};
+          post_obt.xively__XI_Device_ID__c = msg.device.id;
 
           post_obt = node.convType(post_obt, 'object');
           conn.sobject(node.sobject)

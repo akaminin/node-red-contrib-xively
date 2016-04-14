@@ -1,6 +1,6 @@
 var when = require("when");
 var request = require('request');
-var getApiRoot = require('../util').getApiRoot;
+var getApiRoot = require('../../config').getApiRoot;
 
 var IDM_BASE_URL = getApiRoot('xively.services.idm');
 
