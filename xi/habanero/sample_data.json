@@ -1,0 +1,485 @@
+{
+	"cities": [
+		{
+			"latitude": 57.15,
+			"city": "Aberdeen, Scotland",
+			"longitude": -2.15
+		}, {
+			"latitude": -34.916666666666664,
+			"city": "Adelaide, Australia",
+			"longitude": 138.6
+		}, {
+			"latitude": 36.833333333333336,
+			"city": "Algiers, Algeria",
+			"longitude": 3.0
+		}, {
+			"latitude": 52.36666666666667,
+			"city": "Amsterdam, Netherlands",
+			"longitude": 4.883333333333333
+		}, {
+			"latitude": 39.916666666666664,
+			"city": "Ankara, Turkey",
+			"longitude": 32.916666666666664
+		}, {
+			"latitude": -25.25,
+			"city": "Asunci\u00f3n, Paraguay",
+			"longitude": -57.666666666666664
+		}, {
+			"latitude": 37.96666666666667,
+			"city": "Athens, Greece",
+			"longitude": 23.716666666666665
+		}, {
+			"latitude": -36.86666666666667,
+			"city": "Auckland, New Zealand",
+			"longitude": 174.75
+		}, {
+			"latitude": 13.75,
+			"city": "Bangkok, Thailand",
+			"longitude": 100.5
+		}, {
+			"latitude": 41.38333333333333,
+			"city": "Barcelona, Spain",
+			"longitude": 2.15
+		}, {
+			"latitude": 39.916666666666664,
+			"city": "Beijing, China",
+			"longitude": 116.41666666666667
+		}, {
+			"latitude": -1.4666666666666668,
+			"city": "Bel\u00e9m, Brazil",
+			"longitude": -48.483333333333334
+		}, {
+			"latitude": 54.61666666666667,
+			"city": "Belfast, Northern Ireland",
+			"longitude": -5.933333333333334
+		}, {
+			"latitude": 44.86666666666667,
+			"city": "Belgrade, Serbia",
+			"longitude": 20.533333333333335
+		}, {
+			"latitude": 52.5,
+			"city": "Berlin, Germany",
+			"longitude": 13.416666666666666
+		}, {
+			"latitude": 52.416666666666664,
+			"city": "Birmingham, England",
+			"longitude": -1.9166666666666665
+		}, {
+			"latitude": 4.533333333333333,
+			"city": "Bogot\u00e1, Colombia",
+			"longitude": -74.25
+		}, {
+			"latitude": 19.0,
+			"city": "Bombay, India",
+			"longitude": 72.8
+		}, {
+			"latitude": 44.833333333333336,
+			"city": "Bordeaux, France",
+			"longitude": -0.5166666666666667
+		}, {
+			"latitude": 53.083333333333336,
+			"city": "Bremen, Germany",
+			"longitude": 8.816666666666666
+		}, {
+			"latitude": -27.483333333333334,
+			"city": "Brisbane, Australia",
+			"longitude": 153.13333333333333
+		}, {
+			"latitude": 51.46666666666667,
+			"city": "Bristol, England",
+			"longitude": -2.5833333333333335
+		}, {
+			"latitude": 50.86666666666667,
+			"city": "Brussels, Belgium",
+			"longitude": 4.366666666666666
+		}, {
+			"latitude": 44.416666666666664,
+			"city": "Bucharest, Romania",
+			"longitude": 26.116666666666667
+		}, {
+			"latitude": 47.5,
+			"city": "Budapest, Hungary",
+			"longitude": 19.083333333333332
+		}, {
+			"latitude": -34.583333333333336,
+			"city": "Buenos Aires, Argentina",
+			"longitude": -58.36666666666667
+		}, {
+			"latitude": 30.033333333333335,
+			"city": "Cairo, Egypt",
+			"longitude": 31.35
+		}, {
+			"latitude": 22.566666666666666,
+			"city": "Calcutta, India",
+			"longitude": 88.4
+		}, {
+			"latitude": 23.116666666666667,
+			"city": "Canton, China",
+			"longitude": 113.25
+		}, {
+			"latitude": -33.916666666666664,
+			"city": "Cape Town, South Africa",
+			"longitude": 18.366666666666667
+		}, {
+			"latitude": 10.466666666666667,
+			"city": "Caracas, Venezuela",
+			"longitude": -67.03333333333333
+		}, {
+			"latitude": 4.816666666666666,
+			"city": "Cayenne, French Guiana",
+			"longitude": -52.3
+		}, {
+			"latitude": 28.616666666666667,
+			"city": "Chihuahua, Mexico",
+			"longitude": -106.08333333333333
+		}, {
+			"latitude": 29.766666666666666,
+			"city": "Chongqing, China",
+			"longitude": 106.56666666666666
+		}, {
+			"latitude": 55.666666666666664,
+			"city": "Copenhagen, Denmark",
+			"longitude": 12.566666666666666
+		}, {
+			"latitude": -31.466666666666665,
+			"city": "C\u00f3rdoba, Argentina",
+			"longitude": -64.16666666666667
+		}, {
+			"latitude": 14.666666666666666,
+			"city": "Dakar, Senegal",
+			"longitude": -17.466666666666665
+		}, {
+			"latitude": -12.466666666666667,
+			"city": "Darwin, Australia",
+			"longitude": 130.85
+		}, {
+			"latitude": 11.5,
+			"city": "Djibouti, Djibouti",
+			"longitude": 43.05
+		}, {
+			"latitude": 53.333333333333336,
+			"city": "Dublin, Ireland",
+			"longitude": -6.25
+		}, {
+			"latitude": -29.883333333333333,
+			"city": "Durban, South Africa",
+			"longitude": 30.883333333333333
+		}, {
+			"latitude": 55.916666666666664,
+			"city": "Edinburgh, Scotland",
+			"longitude": -3.1666666666666665
+		}, {
+			"latitude": 50.11666666666667,
+			"city": "Frankfurt, Germany",
+			"longitude": 8.683333333333334
+		}, {
+			"latitude": 6.75,
+			"city": "Georgetown, Guyana",
+			"longitude": -58.25
+		}, {
+			"latitude": 55.833333333333336,
+			"city": "Glasgow, Scotland",
+			"longitude": -4.25
+		}, {
+			"latitude": 14.616666666666667,
+			"city": "Guatemala City, Guatemala",
+			"longitude": -90.51666666666667
+		}, {
+			"latitude": -2.1666666666666665,
+			"city": "Guayaquil, Ecuador",
+			"longitude": -79.93333333333334
+		}, {
+			"latitude": 53.55,
+			"city": "Hamburg, Germany",
+			"longitude": 10.033333333333333
+		}, {
+			"latitude": 70.63333333333334,
+			"city": "Hammerfest, Norway",
+			"longitude": 23.633333333333333
+		}, {
+			"latitude": 23.133333333333333,
+			"city": "Havana, Cuba",
+			"longitude": -82.38333333333334
+		}, {
+			"latitude": 60.166666666666664,
+			"city": "Helsinki, Finland",
+			"longitude": 25.0
+		}, {
+			"latitude": -42.86666666666667,
+			"city": "Hobart, Tasmania",
+			"longitude": 147.31666666666666
+		}, {
+			"latitude": 22.333333333333332,
+			"city": "Hong Kong, China",
+			"longitude": 114.18333333333334
+		}, {
+			"latitude": -20.166666666666668,
+			"city": "Iquique, Chile",
+			"longitude": -70.11666666666666
+		}, {
+			"latitude": 52.5,
+			"city": "Irkutsk, Russia",
+			"longitude": 104.33333333333333
+		}, {
+			"latitude": -6.266666666666667,
+			"city": "Jakarta, Indonesia",
+			"longitude": 106.8
+		}, {
+			"latitude": -26.2,
+			"city": "Johannesburg, South Africa",
+			"longitude": 28.066666666666666
+		}, {
+			"latitude": 17.983333333333334,
+			"city": "Kingston, Jamaica",
+			"longitude": -76.81666666666666
+		}, {
+			"latitude": -4.3,
+			"city": "Kinshasa, Congo",
+			"longitude": 15.283333333333333
+		}, {
+			"latitude": 3.1333333333333333,
+			"city": "Kuala Lumpur, Malaysia",
+			"longitude": 101.7
+		}, {
+			"latitude": -16.45,
+			"city": "La Paz, Bolivia",
+			"longitude": -68.36666666666666
+		}, {
+			"latitude": 53.75,
+			"city": "Leeds, England",
+			"longitude": -1.5
+		}, {
+			"latitude": -12.0,
+			"city": "Lima, Peru",
+			"longitude": -77.03333333333333
+		}, {
+			"latitude": 38.733333333333334,
+			"city": "Lisbon, Portugal",
+			"longitude": -9.15
+		}, {
+			"latitude": 53.416666666666664,
+			"city": "Liverpool, England",
+			"longitude": -3.0
+		}, {
+			"latitude": 51.53333333333333,
+			"city": "London, England",
+			"longitude": -0.08333333333333333
+		}, {
+			"latitude": 45.75,
+			"city": "Lyons, France",
+			"longitude": 4.833333333333333
+		}, {
+			"latitude": 40.43333333333333,
+			"city": "Madrid, Spain",
+			"longitude": -3.7
+		}, {
+			"latitude": 53.5,
+			"city": "Manchester, England",
+			"longitude": -2.25
+		}, {
+			"latitude": 14.583333333333334,
+			"city": "Manila, Philippines",
+			"longitude": 120.95
+		}, {
+			"latitude": 43.333333333333336,
+			"city": "Marseilles, France",
+			"longitude": 5.333333333333333
+		}, {
+			"latitude": 23.2,
+			"city": "Mazatl\u00e1n, Mexico",
+			"longitude": -106.41666666666667
+		}, {
+			"latitude": 21.483333333333334,
+			"city": "Mecca, Saudi Arabia",
+			"longitude": 39.75
+		}, {
+			"latitude": -37.78333333333333,
+			"city": "Melbourne, Australia",
+			"longitude": 144.96666666666667
+		}, {
+			"latitude": 19.433333333333334,
+			"city": "Mexico City, Mexico",
+			"longitude": -99.11666666666666
+		}, {
+			"latitude": 45.45,
+			"city": "Milan, Italy",
+			"longitude": 9.166666666666666
+		}, {
+			"latitude": -34.88333333333333,
+			"city": "Montevideo, Uruguay",
+			"longitude": -56.166666666666664
+		}, {
+			"latitude": 55.75,
+			"city": "Moscow, Russia",
+			"longitude": 37.6
+		}, {
+			"latitude": 48.13333333333333,
+			"city": "Munich, Germany",
+			"longitude": 11.583333333333334
+		}, {
+			"latitude": 32.8,
+			"city": "Nagasaki, Japan",
+			"longitude": 129.95
+		}, {
+			"latitude": 35.11666666666667,
+			"city": "Nagoya, Japan",
+			"longitude": 136.93333333333334
+		}, {
+			"latitude": -1.4166666666666667,
+			"city": "Nairobi, Kenya",
+			"longitude": 36.916666666666664
+		}, {
+			"latitude": 32.05,
+			"city": "Nanjing (Nanking), China",
+			"longitude": 118.88333333333334
+		}, {
+			"latitude": 40.833333333333336,
+			"city": "Naples, Italy",
+			"longitude": 14.25
+		}, {
+			"latitude": 28.583333333333332,
+			"city": "New Delhi, India",
+			"longitude": 77.2
+		}, {
+			"latitude": 54.96666666666667,
+			"city": "Newcastle-on-Tyne, England",
+			"longitude": -1.6166666666666667
+		}, {
+			"latitude": 46.45,
+			"city": "Odessa, Ukraine",
+			"longitude": 30.8
+		}, {
+			"latitude": 34.53333333333333,
+			"city": "Osaka, Japan",
+			"longitude": 135.5
+		}, {
+			"latitude": 59.95,
+			"city": "Oslo, Norway",
+			"longitude": 10.7
+		}, {
+			"latitude": 8.966666666666667,
+			"city": "Panama City, Panama",
+			"longitude": -79.53333333333333
+		}, {
+			"latitude": 5.75,
+			"city": "Paramaribo, Suriname",
+			"longitude": -55.25
+		}, {
+			"latitude": 48.8,
+			"city": "Paris, France",
+			"longitude": 2.3333333333333335
+		}, {
+			"latitude": -31.95,
+			"city": "Perth, Australia",
+			"longitude": 115.86666666666666
+		}, {
+			"latitude": 50.416666666666664,
+			"city": "Plymouth, England",
+			"longitude": -4.083333333333333
+		}, {
+			"latitude": -9.416666666666666,
+			"city": "Port Moresby, Papua New Guinea",
+			"longitude": 147.13333333333333
+		}, {
+			"latitude": 50.083333333333336,
+			"city": "Prague, Czech Republic",
+			"longitude": 14.433333333333334
+		}, {
+			"latitude": 16.833333333333332,
+			"city": "Rangoon, Myanmar",
+			"longitude": 96.0
+		}, {
+			"latitude": 64.06666666666666,
+			"city": "Reykjav\u00edk, Iceland",
+			"longitude": -21.966666666666665
+		}, {
+			"latitude": -22.95,
+			"city": "Rio de Janeiro, Brazil",
+			"longitude": -43.2
+		}, {
+			"latitude": 41.9,
+			"city": "Rome, Italy",
+			"longitude": 12.45
+		}, {
+			"latitude": -12.933333333333334,
+			"city": "Salvador, Brazil",
+			"longitude": -38.45
+		}, {
+			"latitude": -33.46666666666667,
+			"city": "Santiago, Chile",
+			"longitude": -70.75
+		}, {
+			"latitude": 59.93333333333333,
+			"city": "St. Petersburg, Russia",
+			"longitude": 30.3
+		}, {
+			"latitude": -23.516666666666666,
+			"city": "S\u00e3o Paulo, Brazil",
+			"longitude": -46.516666666666666
+		}, {
+			"latitude": 31.166666666666668,
+			"city": "Shanghai, China",
+			"longitude": 121.46666666666667
+		}, {
+			"latitude": 1.2333333333333334,
+			"city": "Singapore, Singapore",
+			"longitude": 103.91666666666667
+		}, {
+			"latitude": 42.666666666666664,
+			"city": "Sofia, Bulgaria",
+			"longitude": 23.333333333333332
+		}, {
+			"latitude": 59.28333333333333,
+			"city": "Stockholm, Sweden",
+			"longitude": 18.05
+		}, {
+			"latitude": -34.0,
+			"city": "Sydney, Australia",
+			"longitude": 151.0
+		}, {
+			"latitude": -18.833333333333332,
+			"city": "Tananarive, Madagascar",
+			"longitude": 47.55
+		}, {
+			"latitude": 35.75,
+			"city": "Teheran, Iran",
+			"longitude": 51.75
+		}, {
+			"latitude": 35.666666666666664,
+			"city": "Tokyo, Japan",
+			"longitude": 139.75
+		}, {
+			"latitude": 32.95,
+			"city": "Tripoli, Libya",
+			"longitude": 13.2
+		}, {
+			"latitude": 45.43333333333333,
+			"city": "Venice, Italy",
+			"longitude": 12.333333333333334
+		}, {
+			"latitude": 19.166666666666668,
+			"city": "Veracruz, Mexico",
+			"longitude": -96.16666666666667
+		}, {
+			"latitude": 48.233333333333334,
+			"city": "Vienna, Austria",
+			"longitude": 16.333333333333332
+		}, {
+			"latitude": 43.166666666666664,
+			"city": "Vladivostok, Russia",
+			"longitude": 132.0
+		}, {
+			"latitude": 52.233333333333334,
+			"city": "Warsaw, Poland",
+			"longitude": 21.0
+		}, {
+			"latitude": -41.28333333333333,
+			"city": "Wellington, New Zealand",
+			"longitude": 174.78333333333333
+		}, {
+			"latitude": 47.35,
+			"city": "Z\u00fcrich, Switzerland",
+			"longitude": 8.516666666666667
+		}
+	]
+}

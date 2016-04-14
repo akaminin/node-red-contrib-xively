@@ -4,7 +4,7 @@ var request = require('request');
 var getApiRoot = require('../util').getApiRoot;
 var TIMESERIES_BASE_URL = getApiRoot('xively.services.timeseries');
 
-var getActivityStream= function(accountId, jwt, userId) {
+var getLatestActivity = function(jwt, topic) {
     return when.promise(function(resolve) {
     	var url = TIMESERIES_BASE_URL + topic + '/latest';
         request.get({
@@ -13,8 +13,8 @@ var getActivityStream= function(accountId, jwt, userId) {
             Authorization: "Bearer "+ jwt
           },
           qs:{
-            accountId: accountId,
-            userId: userId
+            pageSize: 10,
+            omitNull: true
 
           }
         },
@@ -23,5 +23,9 @@ var getActivityStream= function(accountId, jwt, userId) {
           resolve(resp);
         });
   });
+};
+
+module.exports = {
+    getLatestActivity: getLatestActivity
 };
 

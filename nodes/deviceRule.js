@@ -40,9 +40,11 @@ module.exports = function(RED) {
     };
 
     var xiRed = require("../");
+    var getJwt = xiRed.habanero.auth.getJwtForCredentialsId;
     var util = xiRed.habanero.util;
 
     var blueprint = require("../xi/services/blueprint");
+    var timeseries = require("../xi/services/timeseries");
 
     var mqtt = require("mqtt");
 
@@ -126,9 +128,12 @@ module.exports = function(RED) {
                 for (var i=0; i<node.rules.length; i+=1) {
                     var rule = node.rules[i];
                     var prop;
+                    var defaultChannel;
                     if(rule.it == 'channel'){
-                        if(i==0){
-                            // first rule, get value from msg
+                        if(i==0 || defaultChannel === rule.iv){
+                            if(i==0){
+                                defaultChannel = rule.iv;
+                            }
                             if(rule.sv == "value"){
                                 var cKeys = Object.keys(msg.payload);
                                 if(cKeys.length > 1){
@@ -146,10 +151,15 @@ module.exports = function(RED) {
                                 }
                             }
                         }else{
-
-                            // need to look it up via timeseries
-
-                            //TODO
+                            
+                            var otherTopic = 'xi/blue/v1/'+msg.account.id+'/d/'+msg.device.id+'/'+rule.iv;
+                            console.log(otherTopic);
+                            getJwt(node.xively_creds).then(function(jwtConfig){
+                                timeseries.getLatestActivity(jwtConfig.jwt, otherTopic)
+                                .then(function(tsResults){
+                                    console.log(tsResults);
+                                });
+                            });
                         }
 
                     }else{
@@ -190,8 +200,7 @@ module.exports = function(RED) {
         }
 
         //begin by going and getting a JWT for idm user
-        xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtConfig){
-
+        getJwt(node.xively_creds).then(function(jwtConfig){
             //setup mqttClient
             node.mqttClient = mqtt.connect("mqtts://",{
                   host: "broker.demo.xively.com",
