@@ -19,6 +19,10 @@ module.exports = function (RED) {
   var jsforce = require('jsforce');
   var request = require('request');
 
+  var nodeUtil = require("../xi/habanero/nodeUtil");
+  var settings = require("../xi/habanero/settings");
+  var getJwt = require("../xi/habanero/auth").getJwtForCredentialsId;
+
   function SalesforceCredsNode(n) {
     RED.nodes.createNode(this, n);
     var node = this;
@@ -163,18 +167,20 @@ module.exports = function (RED) {
     this.description = n.description;
     this.priority = n.priority;
     this.forceConfig = RED.nodes.getNode(this.salesforce);
+    this.xively_creds;
+
+    var node = this;
+
     if (this.forceConfig) {
-      var node = this;
-      node.convType = function (payload, targetType) {
-        if (typeof payload !== targetType) {
-          if (targetType == 'string') {
-            payload = JSON.stringify(payload);
-          } else {
-            payload = JSON.parse(payload);
-          }
-        }
-        return payload;
-      };
+      settings.get().then(function(hsettings){
+          node.xively_creds = hsettings.credsId;
+          setupNode();
+      });
+    }else {
+      this.error('missing salesforce configuration');
+    }
+
+    function setupNode(){
       node.on('input', function (msg) {
         node.sendMsg = function (err, result) {
           if (err) {
@@ -186,6 +192,7 @@ module.exports = function (RED) {
           msg.payload = result;
           node.send(msg);
         };
+
         this.forceConfig.login(function (conn, err) {
           if(err){
             node.sendMsg(err);
@@ -193,22 +200,26 @@ module.exports = function (RED) {
           }
 
           var post_obt = {};
-
           post_obt.subject = node.subject || msg.payload.subject;
           post_obt.description = node.description || JSON.stringify(msg.payload);
           post_obt.priority = node.priority || msg.payload.priority;
-
-          //post_obt.Contact: {xively__XI_End_User_ID__c: cs.orgId},
-          //post_obt.Asset = {xively__Device_ID__c: msg.device.id};
+          post_obt.Asset = {xively__Device_ID__c: msg.device.id};
           post_obt.xively__XI_Device_ID__c = msg.device.id;
+          
+          // contact currently throws from SF
+          // INVALID_FIELD: Foreign key external ID: 66f8b672-5d8e-40b2-af6b-0659f7d97659 not found for field xively__XI_End_User_ID__c in entity Contact
+          // nodeUtil.ensureMsgHasDeviceInfo(node.xively_creds, msg).then(function(updatedMsg){
+          //     var orgId = updatedMsg.device.organizationId;
+          //     post_obt.Contact = {xively__XI_End_User_ID__c: orgId};
+          // }).catch(function(err){
+          //     RED.log.warn("Unable to capture device info for sf device case: "+err);
+          // }).finally(function(){
+          //     conn.sobject(node.sobject).create(post_obt, node.sendMsg);
+          // });
+          conn.sobject(node.sobject).create(post_obt, node.sendMsg);
 
-          post_obt = node.convType(post_obt, 'object');
-          conn.sobject(node.sobject)
-                .create(post_obt, node.sendMsg);
         }, msg);
       });
-    } else {
-      this.error('missing salesforce configuration');
     }
   }
   RED.nodes.registerType('salesforce-create-case out', ForceCreateCaseNode);

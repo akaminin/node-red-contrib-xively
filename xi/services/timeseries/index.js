@@ -6,6 +6,7 @@ var TIMESERIES_BASE_URL = getApiRoot('xively.services.timeseries');
 
 var getLatestActivity = function(jwt, topic) {
     return when.promise(function(resolve) {
+      console.log(topic);
     	var url = TIMESERIES_BASE_URL + topic + '/latest';
         request.get({
           url: url, 
@@ -13,9 +14,8 @@ var getLatestActivity = function(jwt, topic) {
             Authorization: "Bearer "+ jwt
           },
           qs:{
-            pageSize: 10,
+            pageSize: 15,
             omitNull: true
-
           }
         },
         function(err,httpResponse,body){ 

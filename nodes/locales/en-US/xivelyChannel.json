@@ -20,14 +20,6 @@
             "raw":"Raw",
             "json":"JSON"
         },
-        "creds":{
-            "label":{
-                "name": "Label",
-                "accountId": "Account Id",
-                "username": "Username",
-                "password": "Password"
-            }
-        },
         "status": {
             "failed":"failed"
         },

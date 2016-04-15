@@ -26,13 +26,14 @@
   "homepage": "https://github.com/xively/node-red-contrib-xively#readme",
   "node-red": {
     "nodes": {
+      "xively-core": "nodes/core.js",
       "xively-channel": "nodes/xivelyChannel.js",
       "xively-device-rule": "nodes/deviceRule.js",
-      "filter-warning": "nodes/filterWarning.js",
       "salesforce": "nodes/salesforce.js",
       "email": "nodes/email.js",
       "sms": "nodes/sms.js",
-      "weather": "nodes/weather.js"
+      "weather": "nodes/weather.js",
+      "weather-rule": "nodes/weatherRule.js"
     }
   },
   "dependencies": {

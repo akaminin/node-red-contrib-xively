@@ -63,6 +63,7 @@ var ensureMsgHasDeviceInfo = function(jwt, msg){
 }
 
 
+
 module.exports = {
 	regex: {
 		topicToObject: topicToObject

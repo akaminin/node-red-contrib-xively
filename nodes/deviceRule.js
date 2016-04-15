@@ -20,7 +20,13 @@
 module.exports = function(RED) {
     "use strict";
 
-    var merge = require("merge");
+    var when = require("when");
+
+    var util = require("../xi/habanero/util");
+    var nodeUtil = require("../xi/habanero/nodeUtil");
+    var getJwt = require("../xi/habanero/auth").getJwtForCredentialsId;
+
+    var timeseries = require("../xi/services/timeseries");
 
     var operators = {
         'eq': function(a, b) { return a == b; },
@@ -39,36 +45,203 @@ module.exports = function(RED) {
         'else': function(a) { return a === true; }
     };
 
-    var xiRed = require("../");
-    var getJwt = xiRed.habanero.auth.getJwtForCredentialsId;
-    var util = xiRed.habanero.util;
-
-    var blueprint = require("../xi/services/blueprint");
-    var timeseries = require("../xi/services/timeseries");
-
-    var mqtt = require("mqtt");
-
-
     function XivelyDeviceRuleNode (config) {
         RED.nodes.createNode(this,config);
 
         this.xively_creds = config.xively_creds;
         this.rules = config.rules || [];
         this.device_template = config.device_template;
-        this.device_channel = config.device_channel;
+        this.repeat_count = config.repeat_count;
+        this.repeat_units = config.repeat_units;
         this.matchall = config.matchall || true;
         this.matchall = (this.matchall === "false") ? false : true;
 
         var credentials = RED.nodes.getCredentials(this.xively_creds);
 
         var node = this;
+        var context = node.context();
 
-        // parse values from rules 
+        // define node scoped functions
+
+        function onMqttMessage(msg){
+            if(!isWithinRepeatCycle(msg)){
+                evaluateRules(msg);
+            }
+        }
+
+        function onEvaluationSuccess(msg){
+            node.send(msg);
+            var contextKey = 'last_sent_at_'+msg.device.id;
+            var now = new Date();
+            context.set(contextKey, now);
+        }
+
+        function isWithinRepeatCycle(msg){
+            var now = new Date();
+            var contextKey = 'last_sent_at_'+msg.device.id;
+            var last_sent_at = context.get(contextKey);
+            if(typeof last_sent_at != "undefined"){
+                last_sent_at = new Date(last_sent_at);
+            }
+
+            if(last_sent_at instanceof Date){
+                var nextCyleBegins = new Date(last_sent_at.getTime() + node.repeatCycleMillis);
+                if(now < nextCyleBegins){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function deviceSubscribe(device){
+            device.channels.forEach(function(channelType){
+                if(channelType.channelTemplateId == node.device_channel){
+                    node.mqttClient.subscribe(channelType.channel, function(err, granted){
+                        if(!err){
+                            RED.log.debug("subscribed to: "+channelType.channel);
+                        }else{
+                            RED.log.error("error subscribing: "+err);
+                        }
+                    });
+                }
+            });
+        }
+
+        function findValueInTsData(tsData, category, categoryType, resolve, reject){
+            for (var i=0; i<tsData.length; i+=1) {
+                var dotIndex = category.indexOf('.');
+                var grabFirst = false;
+                if(dotIndex === -1){
+                    if(category === "value"){
+                        grabFirst = true;
+                    }
+                }else{
+                    // assume category like 'temp.value';
+                    category = category.substring(0, dotIndex);
+                }
+
+                if(grabFirst || tsData[i].category == category){
+                    if(categoryType == "num"){
+                        return resolve(tsData[i].numericValue);
+                    }else{
+                        return resolve(tsData[i].stringValue);
+                    }
+                }
+            }
+            return reject("Unable to find channel '"+rule.iv+"' value in ts data");
+        }
+
+        function getRuleInputValue(node, rule, iter, msg, tsCache){
+            var prop;
+            return when.promise(function(resolve, reject) {
+                if(rule.it == 'channel'){
+                    if(iter==0 || node.rules[0].iv === rule.iv){
+                        if(rule.sv == "value"){
+                            var cKeys = Object.keys(msg.payload);
+                            if(cKeys.length > 1){
+                                RED.log.warn("Input set to value, but channel has multiple values.");   
+                            }
+                            // grab first value
+                            prop = msg.payload[cKeys[0]].value;
+                            return resolve(prop);
+                        }else{
+                            try{
+                                prop = RED.util.evaluateNodeProperty('payload.'+rule.sv,'msg',node,msg);
+                                return resolve(prop);
+                            }catch(err){
+                                return reject("Unable to evaluate input value for rule: "+err);
+                            }
+                        }
+                    }else{
+                        var otherTopic = 'xi/blue/v1/'+msg.account.id+'/d/'+msg.device.id+'/'+rule.ivn;
+                        if(!tsCache.hasOwnProperty(otherTopic)){
+                            getJwt(node.xively_creds).then(function(jwtConfig){
+                                timeseries.getLatestActivity(jwtConfig.jwt, otherTopic)
+                                .then(function(tsResults){
+                                    if(!tsResults.hasOwnProperty('results')){
+                                        return reject("Timeseries request failure: "+JSON.stringify(tsResults));
+                                    }
+                                    // cache results
+                                    tsCache[otherTopic] = tsResults.results;
+                                    findValueInTsData(tsCache[otherTopic], rule.sv, rule.vt, resolve, reject);
+                                });
+                            });
+                        }else{
+                            findValueInTsData(tsCache[otherTopic], rule.sv, rule.vt, resolve, reject);
+                        }
+                    }
+                }else{
+                    prop = RED.util.evaluateNodeProperty(node.property,node.propertyType,node,msg);
+                    return resolve(prop);
+                }
+            });
+        }
+
+        function evaluateRules(msg){
+            var tsCache = {};
+            var i = 0;
+            var loopRules = function(){
+                var rule = node.rules[i];
+                getRuleInputValue(node, rule, i, msg, tsCache).then(function(prop){
+                    var v1,v2;
+                    v1 = RED.util.evaluateNodeProperty(rule.v,rule.vt,node,msg);
+                    v2 = rule.v2;
+                    if (typeof v2 !== 'undefined') {
+                        v2 = RED.util.evaluateNodeProperty(rule.v2,rule.v2t,node,msg);
+                    }
+                    if (rule.t == "else") { prop = elseflag; elseflag = true; }
+                    if (operators[rule.t](prop,v1,v2,rule.case)) {
+                        // Rule passed
+                        i++;
+                        if(node.matchall == true && i<node.rules.length){
+                            // `ALL` query with additional rules, continue iteration
+                            loopRules();
+                        }else{
+                            // passed rule(s) / we are complete
+                            onEvaluationSuccess(msg);
+                        }
+                    } else {
+                        // rule failed
+                        if(!node.matchall){
+                            // `OR` query, continue interation
+                            i++;
+                            if(i < node.rules.length) {
+                                loopRules();
+                            }
+                        }else{
+                            // `ALL` query, stop iteration
+                        }
+                    }
+                }).catch(function(err){
+                    node.warn(err);
+                });
+            }
+            loopRules();
+        }
+
+        //calculate repeat cycle
+        switch(this.repeat_units){
+            case "s":
+                node.repeatCycleMillis = node.repeat_count*1000;
+                break;
+            case "m":
+                node.repeatCycleMillis = node.repeat_count*60*1000;
+                break;
+            case "h":
+                node.repeatCycleMillis = node.repeat_count*60*60*1000;
+                break;
+            case "d":
+                node.repeatCycleMillis = node.repeat_count*24*60*60*1000;
+                break;
+        }
+
+        // parse proper types from rules 
         for (var i=0; i<this.rules.length; i+=1) {
             var rule = this.rules[i];
 
             if(i==0){
                 if(rule.it !== 'channel'){
+                    // without this we are not listening to anything
                     throw "First rule must have a channel input";
                 }
                 node.device_channel = rule.iv;
@@ -95,144 +268,21 @@ module.exports = function(RED) {
             }
         }
 
-
-        function onMqttMessage(topic, message){
-            var payload = message.toString();
-
-            payload = util.format.tSDataToJSON(payload);
-
-            var msg = merge(
-                {topic: topic, payload: payload},
-                util.regex.topicToObject(topic)
-            );
-
-            evaluateRules(msg);
-        }
-
-        function deviceSubscribe(device){
-            device.channels.forEach(function(channelType){
-                if(channelType.channelTemplateId == node.device_channel){
-                    node.mqttClient.subscribe(channelType.channel, function(err, granted){
-                        if(!err){
-                            RED.log.debug("subscribed to: "+channelType.channel);
-                        }else{
-                            RED.log.error("error subscribing: "+err);
-                        }
-                    });
-                }
-            });
-        }
-
-        function evaluateRules(msg){
-            try {
-                for (var i=0; i<node.rules.length; i+=1) {
-                    var rule = node.rules[i];
-                    var prop;
-                    var defaultChannel;
-                    if(rule.it == 'channel'){
-                        if(i==0 || defaultChannel === rule.iv){
-                            if(i==0){
-                                defaultChannel = rule.iv;
-                            }
-                            if(rule.sv == "value"){
-                                var cKeys = Object.keys(msg.payload);
-                                if(cKeys.length > 1){
-                                    RED.log.warn("Input set to value, but channel has multiple values.");   
-                                }
-                                // grab first value
-                                prop = msg.payload[cKeys[0]].value;
-
-                            }else{
-                                try{
-                                    prop = RED.util.evaluateNodeProperty('payload.'+rule.sv,'msg',node,msg);
-                                }catch(err){
-                                    RED.log.info("Unable to evaluate input value for rule: "+err);
-                                    break;
-                                }
-                            }
-                        }else{
-                            
-                            var otherTopic = 'xi/blue/v1/'+msg.account.id+'/d/'+msg.device.id+'/'+rule.iv;
-                            console.log(otherTopic);
-                            getJwt(node.xively_creds).then(function(jwtConfig){
-                                timeseries.getLatestActivity(jwtConfig.jwt, otherTopic)
-                                .then(function(tsResults){
-                                    console.log(tsResults);
-                                });
-                            });
-                        }
-
-                    }else{
-                        prop = RED.util.evaluateNodeProperty(node.property,node.propertyType,node,msg);
-                    }
-
-                    //console.log("Rule: "+i);
-                    //console.log("Input value: "+prop);
-
-                    var test = prop;
-                    var v1,v2;
-                    v1 = RED.util.evaluateNodeProperty(rule.v,rule.vt,node,msg);
-                    v2 = rule.v2;
-                    if (typeof v2 !== 'undefined') {
-                        v2 = RED.util.evaluateNodeProperty(rule.v2,rule.v2t,node,msg);
-                    }
-                    node.previousValue = prop;
-                    if (rule.t == "else") { test = elseflag; elseflag = true; }
-                    if (operators[rule.t](test,v1,v2,rule.case)) {
-                        if(node.matchall == true && i+1<node.rules.length){
-                            continue;
-                        }
-                        //done
-                        node.send(msg);
-                        break;
-                        
-                    } else {
-                        if(!node.matchall){
-                            continue;
-                        }else{
-                            break;
-                        }
-                    }
-                }
-            } catch(err) {
-                node.warn(err);
-            }
-        }
-
-        //begin by going and getting a JWT for idm user
-        getJwt(node.xively_creds).then(function(jwtConfig){
-            //setup mqttClient
-            node.mqttClient = mqtt.connect("mqtts://",{
-                  host: "broker.demo.xively.com",
-                  port: Number(8883),
-                  username: credentials.account_user_id,
-                  password: credentials.mqtt_secret,
-                  debug: true
-            });
-
-            node.mqttClient.on('connect', function () {
-                RED.log.debug("mqttClient connected");
-            });
-
-            node.mqttClient.on('message', onMqttMessage);
-            // end setup mqttClient
-
-            //go get device list
-            blueprint.devices.getByDeviceTemplateId(
-                jwtConfig.account_id, 
-                jwtConfig.jwt,
-                node.device_template
-            ).then(function(devicesResp){
-                // subscribe for each device
-                devicesResp.devices.results.forEach(function(device, index){
-                    deviceSubscribe(device);
-                });
-            });
-        }).catch(function(err){
-            RED.log.error("Error setting up XivelyDeviceRuleNode: " + err);
+        //setup mqttClient
+        node.mqttClient = nodeUtil.setupMqttClient(credentials,{
+            onMessage: onMqttMessage
         });
 
-        //begin by going and getting a JWT for idm user
+        try{
+            // go get devices and subscribe
+            nodeUtil.getDevicesForTemplateId(
+                node.xively_creds,
+                node.device_template,
+                deviceSubscribe
+            );
+        }catch(err){
+            RED.log.error("Error setting up XivelyDeviceRuleNode: " + err);
+        };
 
         node.on("close", function() {
             // Called when the node is shutdown 

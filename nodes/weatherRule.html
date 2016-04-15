@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 LogMeIn Inc
+  Copyright 2016 LogMeIn Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,16 +14,22 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="xively-device-rule">
-    <div id="device-config" style="display:none;">
-        <div class="form-row">
-            <label for="node-input-device_template"><i class="fa fa-hdd-o"></i> <span data-i18n="xively.label.device-type"></span></label>
-            <select type="text" id="node-input-device_template" style="display: inline-block; vertical-align: middle; width:60%;">
-            </select>
-        </div>
+
+<script type="text/x-red" data-template-name="xi-weather-rule">
+    <div class="form-row">
+        <label for="weather-forecast-time-select"><i class="fa fa-globe"></i> <span data-i18n="weather.label.forecast"></span></label>
+        <select id="weather-forecast-time-select">
+            <option value="currently" data-i18n="weather.label.currently"></option>
+            <option value="tomorrow" data-i18n="weather.label.tomorrow"></option>
+            <option value="specific" data-i18n="weather.label.datetime"></option>
+            <option value="message" data-i18n="weather.label.input"></option>
+        </select>
     </div>
-    <div id="device-config-loader" style="margin: 30px auto;text-align:center;">
-        <img src="red/images/spin.svg" style="height: 30px; margin-right: 10px; " class="login-spinner"/>
+    <div class="form-row weather-forecast-time" id="weather-forecast-time-specific">
+        <label for="node-input-date"><i class="fa fa-calendar"></i> <span data-i18n="weather.label.date"></span></label>
+        <input id="node-input-date" class="weather-time-input" type="date" style="width:140px">
+        <span style="float:right;"><i class="fa fa-clock-o"></i> <span data-i18n="weather.label.time"></span>
+        <input id="node-input-time" class="weather-time-input" type="time" style="width:70px"></span>
     </div>
     <div class="form-row node-input-rule-container-row" style="margin-bottom: 0px;">
         <div id="node-input-rule-container-div" style="box-sizing: border-box; border-radius: 5px; height: 350px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
@@ -31,85 +37,53 @@
         </div>
     </div>
     <div class="form-row">
-        <a href="#" class="editor-button editor-button-small" id="node-input-add-rule" style="margin-top: 4px;"><i class="fa fa-plus"></i> <span data-i18n="switch.label.rule"></span></a>
+        <a href="#" class="editor-button editor-button-small" id="node-input-add-rule" style="margin-top: 4px;"><i class="fa fa-plus"></i> <span data-i18n="weather.label.rule"></span></a>
     </div>
     <div class="form-row">
         <select id="node-input-matchall" style="min-width: 600px; margin-right:5px;">
-            <option value="true" data-i18n="switch.matchall"></option>
-            <option value="false" data-i18n="switch.matchany"></option>
+            <option value="true" data-i18n="weather.matchall"></option>
+            <option value="false" data-i18n="weather.matchany"></option>
         </select>
     </div>
-    <div class="form-row repeat-time-row" id="repeat-time-row-interval">
-        <label for=""><i class="fa fa-repeat"></i> <span data-i18n="xively.label.repeat"></span></label>
-        <span data-i18n="xively.label.every"></span>
-        <input id="node-input-repeat_count" class="repeat-time-count" style="width:50px;"></input>
-        <select style="width: 100px" id="node-input-repeat_units">
-            <option value="s" data-i18n="xively.label.seconds"></option>
-            <option value="m" data-i18n="xively.label.minutes"></option>
-            <option value="h" data-i18n="xively.label.hours"></option>
-            <option value="d" data-i18n="xively.label.days"></option>
-        </select><br/>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name this node (optional)">
+
+    <div class="form-row" id="weather-name">
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="weather.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]weather.placeholder.name">
     </div>
     <div class="form-row" style="display:none;">
         <input type="hidden" id="node-input-xively_creds">
-        <input type="hidden" id="node-input-org_ancestry">
-        <input type="hidden" id="node-input-default_name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="xively-device-rule">
-   <p>Xively rule based on a device template.</p>
-</script>
-
 <script type="text/javascript">
-    RED.nodes.registerType('xively-device-rule',{
-        category: 'xively',    
-        color:"#F84632",
-        defaults: {            
+    RED.nodes.registerType('xi-weather-rule',{
+        category: 'weather',
+        color: '#7AA0D2',
+        defaults: {
+            name: {value:""},
             xively_creds: {type:"xively-user-credentials",required:true},
-            name: {value:""},   
-            default_name: {value:""},
-            repeat_count: {value:"5"},
-            repeat_units: {value: "m"},
-            device_template: {value:"", required:true},
+            date: {value:""},
+            time: {value:""},
+            mode: {value:"currently"},
+            units: {value:"us"},
             rules: {value:[]},
             matchall:{value:"true", required:true}
         },
-        inputs:0,             
-        outputs:1,              
-        icon: "xi.png",    
-        label: function() {    
-            return this.name||this.default_name||"Device Rule";
-        },
-        labelStyle: function() { 
-            return this.name?"node_label_italic":"";
+        inputs:1,
+        outputs:1,
+        icon: "weather.png",
+        label: function() {
+            return this.name||"Weather Rule";
         },
         paletteLabel: function() {
-          return "Device Rule";
+          return "Weather Rule";
         },
-        oneditprepare: function(){
-            // WOW this function is HUGE, can we find a way to clean this up?
-            var xivelyCredsInput = $("#node-input-xively_creds");
-            var channelConfigDiv = $("#device-config");
-            var channelConfigLoaderDiv = $("#device-config-loader");
-            var deviceTemplateInput = $("#node-input-device_template");
-            var rulesContainer = $("#node-input-rule-container");
-            var channelTemplates = {};
-
-            var selectDeviceTypeMsg = this._("xively.label.select-device-type");
-            var andLabel = this._("switch.and");
-            var caseLabel = this._("switch.ignorecase");
-
+        oneditprepare: function() {
             var node = this;
-            var xively_creds = node.xively_creds;
-            var device_template = node.device_template;
-            var device_channel = node.device_channel;
+            var rulesContainer = $("#node-input-rule-container");
 
-            var channelOptions = [];
+            var andLabel = this._("weather.and");
+            var caseLabel = this._("weather.ignorecase");
 
             var operators = [
                 {v:"eq",t:"==", title:"equal to"},
@@ -118,83 +92,32 @@
                 {v:"lte",t:"<=", title:"less than or equal"},
                 {v:"gt",t:">", title:"greater than"},
                 {v:"gte",t:">=", title:"greater than or equal"},
-                {v:"btwn",t:this._("switch.rules.btwn"), title: this._("switch.rules.btwn")},
-                {v:"cont",t:this._("switch.rules.cont"), title: this._("switch.rules.cont")},
-                {v:"regex",t:this._("switch.rules.regex"), title: this._("switch.rules.regex")},
-                {v:"true",t:this._("switch.rules.true"), title: this._("switch.rules.true")},
-                {v:"false",t:this._("switch.rules.false"), title: this._("switch.rules.false")},
-                {v:"null",t:this._("switch.rules.null"), title: this._("switch.rules.null")},
-                {v:"nnull",t:this._("switch.rules.nnull"), title: this._("switch.rules.nnull")}
+                {v:"btwn",t:this._("weather.rules.btwn"), title: this._("weather.rules.btwn")},
+                {v:"cont",t:this._("weather.rules.cont"), title: this._("weather.rules.cont")},
+                {v:"regex",t:this._("weather.rules.regex"), title: this._("weather.rules.regex")},
+                {v:"true",t:this._("weather.rules.true"), title: this._("weather.rules.true")},
+                {v:"false",t:this._("weather.rules.false"), title: this._("weather.rules.false")},
+                {v:"null",t:this._("weather.rules.null"), title: this._("weather.rules.null")},
+                {v:"nnull",t:this._("weather.rules.nnull"), title: this._("weather.rules.nnull")}
             ];
 
-            function setupDeviceTemplates(){
-                $.getJSON('xively/deviceTemplates/'+xively_creds,function(templates) {
-                    deviceTemplateInput.off("change", onDeviceTemplateInputChange);
-                    deviceTemplateInput.empty();
-                    deviceTemplateInput.append(new Option(selectDeviceTypeMsg, ""));
-                    $.each(templates, function(i, template){
-                        deviceTemplateInput.append(new Option(
-                            template.name, 
-                            template.id));
-                        channelTemplates[template.id] = template.channelTemplates;
-                    });
-   
-                    deviceTemplateInput.prop('disabled', false);
-                    if(device_template !== "" && 
-                        deviceTemplateInput.find("option[value='" + device_template + "']").length !== 0){
-                        deviceTemplateInput.val(device_template);
-                        deviceTemplateInput.removeClass("input-error");
-                        setupChannelTemplates(device_template);
-                    }
-
-                    deviceTemplateInput.on("change", onDeviceTemplateInputChange);
-                    channelConfigLoaderDiv.hide();
-                    channelConfigDiv.show();
-                });
-            }
-
-            function setupChannelTemplates(deviceTemplateId){
-                var templates = channelTemplates[deviceTemplateId];
-                channelOptions = []
-                $.each(templates, function(i, template){
-                    channelOptions.push({label:template.name, value:template.id, disabled: template.persistenceType != "timeSeries"});
-                });
-                if(rulesContainer.children().length > 0){
-                    //clear out and redraw
-                    node._def.formToRules(node, rulesContainer);
-                    rulesContainer.empty();
-                    for (var i=0;i<node.rules.length;i++) {
-                        var rule = node.rules[i];
-                        generateRule(i+1,rule);
-                    }
-                }else{
-                    //setup first rule
-                    generateRule(rulesContainer.children().length+1,{t:"",v:"",v2:""});
-                }
-            }
-
-            function onXivelyCredsInputChange(e){
-                var currentVal = xivelyCredsInput.val();
-                if(currentVal == "" || currentVal == "_ADD_"){
-                    deviceTemplateInput.prop('disabled', 'disabled');
-                    channelInput.prop('disabled', 'disabled');
-                }else{
-                    xively_creds = currentVal;
-                    setupDeviceTemplates();
-                }
-            }
-
-            function onDeviceTemplateInputChange(e){
-                var currentVal = deviceTemplateInput.val();
-                if(currentVal == "" || currentVal == null){
-                    // pass
-                }else{
-                    setupChannelTemplates(currentVal);
-                }
-            }
+            var weatherVars = [
+                {v:"summary", t:"Weather Summary"},
+                {v:"slug", t:"Slug"},
+                {v:"humidity", t:"Humidity"},
+                {v:"maxtemp", t:"Max Temp"},
+                {v:"mintemp", t:"Min Temp"},
+                {v:"windspeed", t:"Wind Speed"},
+                {v:"winddirection", t:"Wind Direction"},
+                {v:"clouds", t:"Cloud Cover"},
+                {v:"precipitation", t:"Precipitation"},
+                {v:"sunrise", t:"Sunrise"},
+                {v:"sunset", t:"Sunset"},
+                {v:"ozone", t:"Ozone"}
+            ];
 
             this.resizeRule = function(rule,newWidth) {
-                var selectField = rule.find("select");
+                var selectField = rule.find(".operator_select");
                 var type = selectField.children("option:selected").val();
                 var valueField = rule.find(".node-input-rule-value");
                 var btwnField1 = rule.find(".node-input-rule-btwn-value");
@@ -220,13 +143,7 @@
                         valueField.typedInput("width",(newWidth-selectWidth-120));
                     }
                 }
-            }
-
-            function getTemplateChannels(){
-                return channelOptions;
-            }
-
-
+            };
 
             function generateRule(i,rule) {
                 var container = $('<li/>');
@@ -240,15 +157,12 @@
                 $('<span class="node-input-rule-index" style="padding-left:8px">'+i+'.</span>').appendTo(topRow);
                 $('<label/>', {style:"margin-left: 15px;width:inherit;"}).text("If").appendTo(topRow);
 
-                var inputFieldTypes = [
-                    {value:"channel",label:"channel.",options: getTemplateChannels(), hasSubvalue:true},
-                    'msg',
-                    'flow',
-                    'global'];
+                var inputField = $('<select/>',{class:"node-input-rule-input-value",type:"text",style:"margin-left: 10px; width: 225px;"}).appendTo(topRow);
+                for (var w in weatherVars) {
+                    inputField.append($("<option></option>").val(weatherVars[w].v).text(weatherVars[w].t));
+                }
 
-                var inputField = $('<input/>',{class:"node-input-rule-input-value",type:"text",style:"margin-left: 10px; width: 170px;"}).appendTo(topRow).typedInput({default:rule.it||'channel',types:inputFieldTypes});
-
-                var selectField = $('<select/>',{style:"width:120px; margin-left: 5px; text-align: center;"}).appendTo(bottomRow);
+                var selectField = $('<select/>',{class:"operator_select", style:"width:120px; margin-left: 5px; text-align: center;"}).appendTo(bottomRow);
                 for (var d in operators) {
                     selectField.append($("<option></option>").val(operators[d].v).text(operators[d].t).prop('title', operators[d].title));
                 }
@@ -317,13 +231,10 @@
                     valueField.typedInput('value',rule.v);
                     valueField.typedInput('type',rule.vt||'num');
                 }
-                if(rule.iv && rule.it){
-                    inputField.typedInput('value',rule.iv);
-                    inputField.typedInput('type',rule.it||"channel");
-                    
+                if(rule.iv){
+                    inputField.val(rule.iv);
                 }
                 
-                inputField.typedInput('subvalue',rule.sv||"value");
 
                 if (rule.case) {
                     caseSensitive.prop('checked',true);
@@ -332,13 +243,6 @@
                 }
                 selectField.change();
             }
-
-            if (!xively_creds || xively_creds === "") {
-                deviceTemplateInput.prop('disabled', 'disabled');
-            }else{
-                setupDeviceTemplates();
-            }
-
 
             $("#node-input-add-rule").click(function() {
                 generateRule(rulesContainer.children().length+1,{t:"",v:"",v2:""});
@@ -349,11 +253,6 @@
                 var rule = this.rules[i];
                 generateRule(i+1,rule);
             }
-
-            $(".repeat-time-count").spinner({
-                //max:60,
-                min:1
-            });
 
             $( "#node-input-rule-container" ).sortable({
                 axis: "y",
@@ -368,9 +267,23 @@
             });
             $( "#node-input-rule-container .node-input-rule-handle" ).disableSelection();
 
-            xivelyCredsInput.on("change", onXivelyCredsInputChange);
-            deviceTemplateInput.on("change", onDeviceTemplateInputChange);
-
+            $("#weather-forecast-time-select").change(function() {
+                var id = $("#weather-forecast-time-select option:selected").val();
+                $(".weather-forecast-time").hide();
+                $("#weather-forecast-time-"+id).show();
+            });
+            if(this.date !== ""||this.time !== ""){
+                $("#weather-forecast-time-select").val("specific");
+            } else if (this.mode === "currently"){
+                $("#weather-forecast-time-select").val("currently");
+            } else if (this.mode === "node"){
+                $("#weather-forecast-time-select").val("tomorrow");
+            } else {
+                $("#weather-forecast-time-select").val("message");
+            }
+            var id = $("#weather-forecast-time-select option:selected").val();
+            $(".weather-forecast-time").hide();
+            $("#weather-forecast-time-"+id).show();
         },
 
         formToRules: function(node, rulesContainer, validate){
@@ -382,18 +295,8 @@
                 var type = rule.find("select option:selected").val();
                 var r = {t:type};
                 if (!(type === "true" || type === "false" || type === "null" || type === "nnull" || type === "else")) {
-                    r.sv = rule.find(".node-input-rule-input-value").typedInput('subvalue');
-                    r.iv = rule.find(".node-input-rule-input-value").typedInput('value');
-                    r.ivn = rule.find(".red-ui-typedInput-option-trigger").text();
-                    r.it = rule.find(".node-input-rule-input-value").typedInput('type');
-
-                    if(validate && i == 0){
-                        //first rule must be a channel input
-                        if(r.it !== "channel"){
-                            alert("First rule must be a channel input");
-                            throw "Rule Error";
-                        }
-                    }
+                    r.iv = rule.find(".node-input-rule-input-value").val();
+                    r.it = "weather";
 
                     if (type === "btwn") {
                         r.v = rule.find(".node-input-rule-btwn-value").typedInput('value');
@@ -411,12 +314,18 @@
                 node.rules.push(r);
             });
         },
-
-        oneditsave: function(){
-            var defaultNameSuffix = " - Rule";
-            var defaultName = $.trim($("#node-input-device_template option:selected" ).text()+defaultNameSuffix);
-            if(defaultName !== "" && defaultName !== defaultNameSuffix){
-                $("#node-input-default_name").val(defaultName);
+        oneditsave: function() {
+            var type = $("#weather-forecast-time-select option:selected").val();
+            if (type == "tomorrow" || type == "message") {
+                $("#node-input-date").val("");
+                $("#node-input-time").val("");
+            }
+            if(type === "message"){
+                this.mode = "message";
+            } else if(type === "currently" ){
+                this.mode = "currently";
+            }else {
+                this.mode = "node";
             }
 
             this._def.formToRules(this, $("#node-input-rule-container"), true);
@@ -438,6 +347,48 @@
             rules.each(function(i) {
                 node.resizeRule($(this),newWidth);
             })
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
         }
     });
+</script>
+
+<script type="text/x-red" data-help-name="xi-weather-rule">
+    <p>A node which evaluates weather conditions and forward message if met.</p>
+    <p>
+        This is done using a latitude and longitude set of coordinates and an optional date/time combination.
+    </p>
+    <p>These can be passed in as settings on the node, or as:</p>
+    <ul>
+       <li> 
+            <code>msg.location.lat</code>, <code>msg.location.lon</code> and optionally <code>msg.time</code>
+        </li>
+    </ul>
+    <p>if using <code>msg.time</code> it can either be a javascript Date object or a
+    string or number of milliseconds since 1970 (epoch time in mS).
+    If neither is specified the forecast defaults to tomorrow.</p>
+    <p>The user also has the option of providing a date instead of returning data for the next day.</p>
+    <p>The node will always prioritise the node settings if they are present.</p>
+    <p>The node sets the following properties of <code>msg.weather</code>:</p>
+    <ul>
+        <li><code>slug</code> - a single word (string) representation of the current weather forecast.</li>
+        <li><code>summary</code> - a more detailed explanation of what the weather is forecast to be.</li>
+        <li><code>humidity</code> - a current humidity forecast in decimal (0-1).</li>
+        <li><code>maxtemp</code> - the current forecast max temperature for the location in Fahrenheit.</li>
+        <li><code>mintemp</code> - the current forecast minimum temperature for the location in Fahrenheit.</li>
+        <li><code>windspeed</code> - the current forecast windspeed at the location in metres per second</li>
+        <li><code>winddirection</code> - the current forecast wind direction for the location in degrees.</li>
+        <li><code>lon</code> - the longitude of the location from which the forecast was sourced.</li>
+        <li><code>lat</code> - the latitude of the location from which the forecast was sourced.</li>
+        <li><code>clouds</code> - the current forecast cloud coverage of the location in percent.</li>
+        <li><code>precipitation</code> - the current forecast precipitation chance</li>
+        <li><code>sunrise</code> - the time at which the is forecast to rise in Unix UTC format.</li>
+        <li><code>sunset</code> - the time at which the sun is forecast to set in Unix UTC format.</li>
+        <li><code>units</code> - the units of the results as requested.</li>
+        <li><code>location.lat</code> - the longitude of the location from which the data was sourced.</li>
+        <li><code>location.lon</code> - the latitude of the location from which the data was sourced.</li>
+        <li><code>time</code> - the time at which the weather data was received</li>
+        <li><code>data</code> - the full weather data object (includes fine grained info). </li>
+    </ul>
 </script>

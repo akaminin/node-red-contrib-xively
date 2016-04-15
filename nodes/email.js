@@ -25,7 +25,7 @@ module.exports = function(RED) {
     var merge = require("merge");
 
     var xiRed = require('../');
-    var util = xiRed.habanero.util;
+    var nodeUtil = require("../xi/habanero/nodeUtil");
 
     var getApiRoot = require('../xi/config').getApiRoot;
     var SEND_EMAIL_POST_URL = getApiRoot('xively.habanero-proxy')+'email';
@@ -74,25 +74,23 @@ module.exports = function(RED) {
                 toAddress = RED.util.evaluateNodeProperty(node.property,node.propertyType,node,msg);
             }
 
-            xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtResp){
-                var jwt = jwtResp.jwt;
-                if(node.include_device_data){
-                    util.ensureMsgHasDeviceInfo(jwt, msg).then(function(updatedMsg){
-                        var deviceInfo = merge(true, updatedMsg.device);
-                        // dont need to display channel info
-                        delete deviceInfo["channels"];
-                        renderedBody += "\r\n\r\n";
-                        renderedBody += JSON.stringify(deviceInfo, null, 2);
-                        sendEmail(jwt, toAddress, renderedSubject, renderedBody);
-
-                    }).catch(function(err){
-                        RED.log.warn("Unable to capture device info for email: "+err);
-                        sendEmail(jwt, toAddress, renderedSubject, renderedBody);
-                    });
-                }else{
+            if(node.include_device_data){
+                nodeUtil.ensureMsgHasDeviceInfo(node.xively_creds, msg).then(function(updatedMsg){
+                    var deviceInfo = merge(true, updatedMsg.device);
+                    // dont need to display channel info
+                    delete deviceInfo["channels"];
+                    renderedBody += "\r\n\r\n";
+                    renderedBody += JSON.stringify(deviceInfo, null, 2);
                     sendEmail(jwt, toAddress, renderedSubject, renderedBody);
-                }
-            });
+
+                }).catch(function(err){
+                    RED.log.warn("Unable to capture device info for email: "+err);
+                    sendEmail(jwt, toAddress, renderedSubject, renderedBody);
+                });
+            }else{
+                sendEmail(jwt, toAddress, renderedSubject, renderedBody);
+            }
+
             
         });
     }

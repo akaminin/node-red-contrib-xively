@@ -49,7 +49,7 @@ module.exports = function(RED) {
         return weather;
     }
 
-    function WeatherQueryNode(n) {
+    function WeatherRuleNode(n) {
         RED.nodes.createNode(this,n);
         this.units = n.units || "us";
         this.xively_creds = n.xively_creds;
@@ -79,6 +79,7 @@ module.exports = function(RED) {
             });
         }
 
+
         this.on ('input', function(msg) {
             var date;
             var time;
@@ -86,36 +87,33 @@ module.exports = function(RED) {
             var lat;
             var lon;
 
-            if (n.lat && n.lon) {
-                if (90 >= n.lat && 180 >= n.lon && n.lat >= -90 && n.lon >= -180) {
-                    lat = n.lat;
-                    lon = n.lon;
-                } else {
-                    node.error(RED._("weather.error.settings-invalid-lat_lon"));
-                    return;
-                }
+            if(msg.device.longitude && msg.device.latitude){
+                lat = msg.device.longitude;
+                lon = msg.device.latitude;  
+            }else if (n.lat && n.lon) {
+                lat = n.lat;
+                lon = n.lon;
             } else if (msg.location) {
-                //query node code to check the input for information.
-                if (msg.location.lat && msg.location.lon) {
-                    if (90 >= msg.location.lat && 180 >= msg.location.lon && msg.location.lat >= -90 && msg.location.lon >= -180) {
-                        lat = msg.location.lat;
-                        lon = msg.location.lon;
-                    } else {
-                        node.error(RED._("weather.error.msg-invalid-lat_lon"));
-                        return;
-                    }
-                }
+                lat = msg.location.lat;
+                lon = msg.location.lon;
             }
+
+            if (90 >= lat && 180 >= lon && lat >= -90 && lon >= -180) {
+                // valid;
+            } else {
+                node.error(RED._("weather.error.settings-invalid-lat_lon"));
+                return;
+            }  
 
             //the date string is in the format YYYY-MM-DD
             //the time string is in the format HH:MM
             var isoDateStr = null;
             var tomorrow = false;
+
             if (n.date && n.time) {
                 date = n.date;
                 time = n.time;
-            }
-            else if (msg.time && n.mode === "message") {
+            }else if (msg.time && n.mode === "message") {
                 if (msg.time.toISOstring) {
                     isoDateStr = msg.time.toISOString();
                 } else if (typeof(msg.time === "string") && !isNaN(parseInt(msg.time))) {
@@ -123,7 +121,9 @@ module.exports = function(RED) {
                     isoDateStr = msg.time.toISOString();
                 }
             }else{
-                tomorrow = true;
+                if(n.mode !== "currently"){
+                    tomorrow = true;
+                }
             }
 
             isoDateStr = isoDateStr || new Date().toISOString();
@@ -145,5 +145,5 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("xi-weather-query", WeatherQueryNode);
+    RED.nodes.registerType("xi-weather-rule", WeatherRuleNode);
 };

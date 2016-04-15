@@ -25,6 +25,7 @@
 			"host":"xi-ext-services.herokuapp.com",
 			"port":80,
 			"apiRoot":"/api/v1/"
-		}
+		},
+		"CONNECTION_DEVICE_LIMIT":1000
 	}
 }

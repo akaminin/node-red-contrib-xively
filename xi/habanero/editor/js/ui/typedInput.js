@@ -140,6 +140,9 @@
                     opt = {value:opt,label:opt, disabled:false};
                 }
                 var op = $('<a href="#">').attr("value",opt.value).appendTo(menu);
+                if(opt.disabled){
+                    op.css({"background-color":"#ddd", "cursor":"not-allowed"});
+                }
                 if (opt.label) {
                     op.text(opt.label);
                 }
@@ -149,12 +152,13 @@
                 } else {
                     op.css({paddingLeft: "18px"});
                 }
-
-                op.click(function(event) {
-                    event.preventDefault();
-                    callback(opt.value);
-                    that._hideMenu(menu);
-                });
+                if(!opt.disabled){
+                    op.click(function(event) {
+                        event.preventDefault();
+                        callback(opt.value);
+                        that._hideMenu(menu);
+                    });
+                }
             });
             menu.css({
                 display: "none",

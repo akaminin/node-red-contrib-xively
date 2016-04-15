@@ -1,0 +1,13 @@
+{
+    "xively": {
+        "creds":{
+            "label":{
+                "name": "Label",
+                "accountId": "Account Id",
+                "username": "Username",
+                "password": "Password",
+                "mqtt-secret":"Mqtt Secret"
+            }
+        }
+    }
+}

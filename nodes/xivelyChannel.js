@@ -19,47 +19,12 @@
 
 module.exports = function(RED) {
     "use strict";
-    // require any external libraries we may need....
-    var merge = require("merge");
 
-    var xiRed = require("../");
-    var util = xiRed.habanero.util;
+    var util = require("../xi/habanero/util");
+    var nodeUtil = require("../xi/habanero/nodeUtil");
+    var getJwt = require("../xi/habanero/auth").getJwtForCredentialsId;
 
     var blueprint = require("../xi/services/blueprint");
-
-    var mqtt = require("mqtt");
-
-    function XivelyUserCredentialsNode (config) {
-        RED.nodes.createNode(this, config);
-        this.creds_name = config.creds_name;
-    }
-
-    RED.nodes.registerType("xively-user-credentials", XivelyUserCredentialsNode, {
-        credentials: {
-            creds_name: {type: "text"},
-            account_id: {type: "text"},
-            user_id: {type: "text"},
-            account_user_id: {type: "text"},
-            username: {type: "text"},
-            password: {type: "password"}
-        }
-    });
-
-    function OnWeekdaysFilterNode (config) {
-        RED.nodes.createNode(this,config);
-        var node = this;
-
-        node.on('input', function (msg) {
-            node.send(msg);
-        });
-
-        node.on("close", function() {
-            // Called when the node is shutdown 
-        });
-    }
-
-    RED.nodes.registerType("filter-on-weekdays", OnWeekdaysFilterNode);
-
 
     function XivelyChannelNode (config) {
         RED.nodes.createNode(this,config);
@@ -73,17 +38,7 @@ module.exports = function(RED) {
 
         var node = this;
 
-        function onMqttMessage(topic, message){
-            var payload = message.toString();
-
-            if(node.payload_format == "json"){
-                payload = util.format.tSDataToJSON(payload);
-            }
-            var msg = merge(
-                {topic: topic, payload: payload},
-                util.regex.topicToObject(topic)
-            );
-
+        function onMqttMessage(msg){
             node.send(msg);
         }
 
@@ -100,38 +55,22 @@ module.exports = function(RED) {
                 }
             });
         }
-        //begin by going and getting a JWT for idm user
-        xiRed.habanero.auth.getJwtForCredentialsId(node.xively_creds).then(function(jwtConfig){
-            //setup mqttClient
-            node.mqttClient = mqtt.connect("mqtts://",{
-                  host: "broker.demo.xively.com",
-                  port: Number(8883),
-                  username: credentials.account_user_id,
-                  password: credentials.mqtt_secret,
-                  debug: true
-            });
 
-            node.mqttClient.on('connect', function () {
-                RED.log.debug("mqttClient connected");
-            });
-
-            node.mqttClient.on('message', onMqttMessage);
-            // end setup mqttClient
-
-            //go get device list
-            blueprint.devices.getByDeviceTemplateId(
-                jwtConfig.account_id, 
-                jwtConfig.jwt,
-                node.device_template
-            ).then(function(devicesResp){
-                // subscribe for each device
-                devicesResp.devices.results.forEach(function(device, index){
-                    deviceSubscribe(device);
-                });
-            });
-        }).catch(function(err){
-            RED.log.error("Error setting up XivelyInNode: " + err);
+        //setup mqttClient
+        node.mqttClient = nodeUtil.setupMqttClient(credentials,{
+            onMessage: onMqttMessage
         });
+
+        try{
+            // go get devices and subscribe
+            nodeUtil.getDevicesForTemplateId(
+                node.xively_creds,
+                node.device_template,
+                deviceSubscribe
+            );
+        }catch(err){
+            RED.log.error("Error setting up XivelyDeviceRuleNode: " + err);
+        };
 
         node.on("close", function() {
             // Called when the node is shutdown 
@@ -142,27 +81,4 @@ module.exports = function(RED) {
     }
 
     RED.nodes.registerType("xively-channel", XivelyChannelNode);
-
-
-    RED.httpAdmin.get('/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {
-        xiRed.habanero.auth.getJwtForCredentialsId(req.params.id).then(function(jwtConfig){
-            blueprint.devicesTemplates.get(jwtConfig.account_id, jwtConfig.jwt).then(function(dTemplatesResp){
-                res.json(dTemplatesResp.deviceTemplates.results);
-            });
-        }).catch(function(err){
-            console.log(err);
-            res.json([err]);
-        });
-    });
-
-    RED.httpAdmin.get('/xively/orgs/:id', RED.auth.needsPermission(""), function(req, res, next) {
-        xiRed.habanero.auth.getJwtForCredentialsId(req.params.id).then(function(jwtConfig){
-            blueprint.organizations.get(jwtConfig.account_id, jwtConfig.jwt, req.query.parentId, req.query.page).then(function(dOrgsResp){
-                res.json(dOrgsResp.organizations.results);
-            });
-        }).catch(function(err){
-            console.log(err);
-            res.json([err]);
-        });
-    });
 }

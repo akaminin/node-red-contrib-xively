@@ -6,7 +6,13 @@
             "device-type": "Device Type",
             "select-device-type":"Select a device type...",
             "channel-type": "Channel",
-            "select-channel-type": "Select a channel type..."
+            "select-channel-type": "Select a channel type...",
+            "repeat":"Repeat",
+            "every":"every",
+            "minutes":"minutes",
+            "seconds":"seconds",
+            "hours":"hours",
+            "days":"days"
         },
         "creds":{
             "label":{
