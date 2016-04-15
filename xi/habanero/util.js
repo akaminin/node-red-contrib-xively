@@ -40,29 +40,6 @@ var topicToObject = function(topicStr){
 	}
 }
 
-var ensureMsgHasDeviceInfo = function(jwt, msg){
-	return when.promise(function(resolve, reject) {
-		// quick and dirty way to see if we've already have retrieved device info
-		if(msg.device.hasOwnProperty('created')){
-			return resolve(msg);
-		}
-		try{
-            var acctId = msg.account.id;
-            var devId = msg.device.id;
-            blueprint.devices.getDevice(acctId, jwt, devId).then(function(devResp){
-                msg.device = devResp.device;
-                resolve(msg);
-            }).catch(function(err){
-                throw err;
-            });
-        }catch(err){
-            return reject(err);
-        }
-	});
-
-}
-
-
 
 module.exports = {
 	regex: {
@@ -70,6 +47,5 @@ module.exports = {
 	},
     format: {
     	tSDataToJSON: tSDataToJSON
-    },
-    ensureMsgHasDeviceInfo: ensureMsgHasDeviceInfo
+    }
 }
