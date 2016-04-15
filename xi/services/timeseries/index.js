@@ -1,7 +1,7 @@
 var when = require("when");
 var request = require('request');
 
-var getApiRoot = require('../util').getApiRoot;
+var getApiRoot = require('../../config').getApiRoot;
 var TIMESERIES_BASE_URL = getApiRoot('xively.services.timeseries');
 
 var getLatestActivity = function(jwt, topic) {
