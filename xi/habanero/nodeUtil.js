@@ -44,6 +44,10 @@ var getDevicesForTemplateId = function(xively_creds, deviceTemplateId, forEachDe
 var ensureMsgHasDeviceInfo = function(xively_creds, msg){
 	return when.promise(function(resolve, reject) {
 		// quick and dirty way to see if we've already have retrieved device info
+		if(typeof msg.device !== "object"){
+			return reject("not a device message");
+		}
+
 		if(msg.device.hasOwnProperty('created')){
 			return resolve(msg);
 		}

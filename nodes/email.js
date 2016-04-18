@@ -26,6 +26,7 @@ module.exports = function(RED) {
 
     var xiRed = require('../');
     var nodeUtil = require("../xi/habanero/nodeUtil");
+    var getJwt = require("../xi/habanero/auth").getJwtForCredentialsId;
 
     var getApiRoot = require('../xi/config').getApiRoot;
     var SEND_EMAIL_POST_URL = getApiRoot('xively.habanero-proxy')+'email';
@@ -84,8 +85,14 @@ module.exports = function(RED) {
                     sendEmail(jwt, toAddress, renderedSubject, renderedBody);
 
                 }).catch(function(err){
-                    RED.log.warn("Unable to capture device info for email: "+err);
-                    sendEmail(jwt, toAddress, renderedSubject, renderedBody);
+                    if(err == "not a device message"){
+                        RED.log.error("Can not attach device info. This msg was not triggered by a device");
+                    }else{
+                        RED.log.error("Unable to capture device info for email: "+err);
+                    }
+                    getJwt(node.xively_creds).then(function(jwtConfig){
+                        sendEmail(jwtConfig.jwt, toAddress, renderedSubject, renderedBody);
+                    });
                 });
             }else{
                 sendEmail(jwt, toAddress, renderedSubject, renderedBody);

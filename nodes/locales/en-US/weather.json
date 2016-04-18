@@ -4,6 +4,7 @@
             "name": "Name",
             "forecast": "Forecast",
             "tomorrow": "Tomorrow",
+            "currently": "Currently",
             "datetime": "Specific date and time",
             "input": "Input defined",
             "date": "Date",
@@ -13,7 +14,29 @@
             "register": "Register to get your key at",
             "copy": "Copy the key here and give it a name",
             "key": "Key",
-            "units": "Units"
+            "units": "Units",
+            "rule":"Rule"
+        },
+        "and": "and",
+        "matchall": "match all rules",
+        "matchany": "match any rule",
+        "ignorecase": "ignore case",
+        "placeholder": {
+            "name": "Name",
+            "latitude": "Latitude",
+            "longitude": "Longitude"
+        },
+        "matchall": "match all rules",
+        "matchany": "match any rule",
+        "rules": {
+            "btwn":"is between",
+            "cont":"contains",
+            "regex":"matches regex",
+            "true":"is true",
+            "false":"is false",
+            "null":"is null",
+            "nnull":"is not null",
+            "else":"otherwise"
         },
         "placeholder": {
             "name": "Name",

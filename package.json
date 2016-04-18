@@ -32,8 +32,7 @@
       "salesforce": "nodes/salesforce.js",
       "email": "nodes/email.js",
       "sms": "nodes/sms.js",
-      "weather": "nodes/weather.js",
-      "weather-rule": "nodes/weatherRule.js"
+      "weather": "nodes/weather.js"
     }
   },
   "dependencies": {
