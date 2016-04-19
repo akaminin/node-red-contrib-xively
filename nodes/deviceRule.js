@@ -69,6 +69,19 @@ module.exports = function(RED) {
             }
         }
 
+        function onMqttConnect(){
+            try{
+                // go get devices and subscribe
+                nodeUtil.getDevicesForTemplateId(
+                    node.xively_creds,
+                    node.device_template,
+                    deviceSubscribe
+                );
+            }catch(err){
+                RED.log.error("Error setting up XivelyDeviceRuleNode: " + err);
+            };
+        }
+
         function onEvaluationSuccess(msg){
             node.send(msg);
             var contextKey = 'last_sent_at_'+msg.device.id;
@@ -270,19 +283,9 @@ module.exports = function(RED) {
 
         //setup mqttClient
         node.mqttClient = nodeUtil.setupMqttClient(credentials,{
-            onMessage: onMqttMessage
+            onMessage: onMqttMessage,
+            onConnect: onMqttConnect
         });
-
-        try{
-            // go get devices and subscribe
-            nodeUtil.getDevicesForTemplateId(
-                node.xively_creds,
-                node.device_template,
-                deviceSubscribe
-            );
-        }catch(err){
-            RED.log.error("Error setting up XivelyDeviceRuleNode: " + err);
-        };
 
         node.on("close", function() {
             // Called when the node is shutdown 
