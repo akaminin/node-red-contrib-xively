@@ -61,7 +61,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('xi-email out',{
         category: 'xively',    
-        color:"#809fff",
+        color:"#232435",
         defaults: {            
             name: {value:""},   
             xively_creds: {type:"xively-user-credentials",required:true},
@@ -81,7 +81,7 @@
             return this.name||"Email";
         },
         labelStyle: function() { 
-            return this.name?"node_label_italic":"";
+            return "";
         },
         paletteLabel: function() {
           return "Email";

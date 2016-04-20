@@ -56,7 +56,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('xively-channel',{
         category: 'xively',    
-        color:"#F84632",
+        color:"#E33E2C",
         defaults: {            
             xively_creds: {type:"xively-user-credentials",required:true},
             name: {value:""},   
@@ -72,7 +72,7 @@
             return this.name||this.default_name||"Channel";
         },
         labelStyle: function() { 
-            return this.name?"node_label_italic":"";
+            return "";
         },
         paletteLabel: function() {
           return "Channel";
