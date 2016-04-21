@@ -20,6 +20,11 @@ function getApiRoot(configPath){
 	return apiBaseUrl;
 }
 
+function get(configPath){
+	return dot.pick(configPath, config);
+}
+
 module.exports = {
+	get: get,
 	getApiRoot: getApiRoot
 }

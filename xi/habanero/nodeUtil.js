@@ -2,7 +2,7 @@ var when = require('when');
 var mqtt = require("mqtt");
 var merge = require("merge");
 
-var config = require("config");
+var config = require("../config");
 var blueprint = require("../services/blueprint");
 var getJwt = require('./auth').getJwtForCredentialsId;
 var util = require('./util');
