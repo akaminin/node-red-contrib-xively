@@ -4,7 +4,7 @@ var ENV = process.env.NODE_ENV || "development"
 var configFilePath = '../config/'+ENV+'.json';
 var config;
 try{
-	var config = require(configPath);
+	var config = require(configFilePath);
 }catch(err){
 	console.log("Unable to locate node-red-contrib-xivley config file: " + configFilePath);
 	throw err;
