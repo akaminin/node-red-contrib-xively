@@ -31,7 +31,7 @@
         "y": 79,
         "wires": [
             [
-                "8007d37e.ce284"
+                "df3d3e74.23c05"
             ]
         ]
     },
@@ -46,20 +46,5 @@
         "x": 507.5,
         "y": 120,
         "wires": []
-    },
-    {
-        "id": "8007d37e.ce284",
-        "type": "filter-warning",
-        "z": "cdac0bb5.7b18e8",
-        "trigger_value": 48,
-        "trigger_repeat": 5,
-        "x": 260.5,
-        "y": 167,
-        "wires": [
-            [
-                "df3d3e74.23c05",
-                "afd0914a.0818c"
-            ]
-        ]
     }
 ]

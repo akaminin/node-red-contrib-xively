@@ -1,8 +1,17 @@
-process.env.NODE_CONFIG_DIR = './node_modules/node-red-contrib-xively/config/';
-var config = require('config');
+var dot = require('dot-object');
+
+var ENV = process.env.NODE_ENV || "development"
+var configFilePath = '../config/'+ENV+'.json';
+var config;
+try{
+	var config = require(configPath);
+}catch(err){
+	console.log("Unable to locate node-red-contrib-xivley config file: " + configFilePath);
+	throw err;
+}
 
 function getApiRoot(configPath){
-	var bpConfig = config.get(configPath);
+	var bpConfig =  dot.pick(configPath, config);
 	var apiBaseUrl = bpConfig.scheme + bpConfig.host;
 	if(bpConfig.port && bpConfig.port !== 80){
 		apiBaseUrl += ":"+bpConfig.port;
@@ -10,7 +19,6 @@ function getApiRoot(configPath){
 	apiBaseUrl += bpConfig.apiRoot;
 	return apiBaseUrl;
 }
-
 
 module.exports = {
 	getApiRoot: getApiRoot
