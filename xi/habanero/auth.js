@@ -14,7 +14,7 @@ var idm = require('../services/idm');
 var blueprint = require('../services/blueprint');
 var habaneroSettings = require('./settings');
 
-var getRed(){
+var getRed = function(){
     try{
         var RED = require("../../../../red/runtime");
     }catch(err){
@@ -31,6 +31,7 @@ var getRed(){
 var cachedJwts = {};
 
 var getJwtForCredentialsId = function(credentialsId){
+    var RED = getRed();
     return when.promise(function(resolve, reject) {
         if(cachedJwts[credentialsId]){
             var jwtConfig = cachedJwts[credentialsId];
@@ -86,6 +87,7 @@ var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
 };
 
 var setupDefaultFlows = function(habaneroIdmUser, requestBody){
+    var RED = getRed();
     return when.promise(function(resolve, reject) {
         var credsId = RED.util.generateId();
         var defaultFlows = require('./defaultFlows/airFilterFlows.json');
