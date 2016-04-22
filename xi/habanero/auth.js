@@ -87,6 +87,9 @@ var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
 };
 
 var setupDefaultFlows = function(habaneroIdmUser, requestBody){
+    var RED = require('node-red-habanero');
+    console.log(RED);
+    console.log("indide");
     return when.promise(function(resolve, reject) {
         var credsId = RED.util.generateId();
         var defaultFlows = require('./defaultFlows/airFilterFlows.json');
