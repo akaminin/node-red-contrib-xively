@@ -18,7 +18,7 @@ try{
     var RED = require("../../../../red/runtime");
 }catch(err){
     try{
-        var RED = require("../../../node-red-habanero/red/runtime");
+        var RED = require('node-red-habanero');
     }catch(err){
         console.error("Unable to import RED runtime");
     }

@@ -10,7 +10,11 @@ var util = require('./util');
 try{
     var RED = require("../../../../red/runtime");
 }catch(err){
-    console.error("Unable to import RED runtime");
+    try{
+        var RED = require('node-red-habanero');
+    }catch(err){
+        console.error("Unable to import RED runtime");
+    }
 }
 
 
