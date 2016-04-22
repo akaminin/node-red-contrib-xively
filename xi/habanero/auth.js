@@ -14,15 +14,18 @@ var idm = require('../services/idm');
 var blueprint = require('../services/blueprint');
 var habaneroSettings = require('./settings');
 
-try{
-    var RED = require("../../../../red/runtime");
-}catch(err){
+var getRed(){
     try{
-        // running embedded
-        var RED = require('node-red-habanero');
+        var RED = require("../../../../red/runtime");
     }catch(err){
-        console.error("Unable to import RED runtime");
+        try{
+            // running embedded
+            var RED = require('node-red-habanero');
+        }catch(err){
+            console.error("Unable to import RED runtime");
+        }
     }
+    return RED;
 }
 
 var cachedJwts = {};

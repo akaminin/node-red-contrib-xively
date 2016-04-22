@@ -7,18 +7,6 @@ var blueprint = require("../services/blueprint");
 var getJwt = require('./auth').getJwtForCredentialsId;
 var util = require('./util');
 
-try{
-    var RED = require("../../../../red/runtime");
-}catch(err){
-    try{
-    	// running embedded
-        var RED = require('node-red-habanero');
-    }catch(err){
-        console.error("Unable to import RED runtime");
-    }
-}
-
-
 var getDevicesForTemplateId = function(xively_creds, deviceTemplateId, forEachDeviceCb, max_devices){
 	// This function loops through paginated results of devices
 	// and calls `forEachDeviceCb` with each device
@@ -82,10 +70,10 @@ var setupMqttClient = function(creds, options){
           password: creds.mqtt_secret
     });
 
-    var onConnect = options.onConnect || function () {RED.log.debug("mqttClient connected");}
+    var onConnect = options.onConnect || function () {}
     mqttClient.on('connect', onConnect);
 
-    var onError = options.onConnect || function (e) {RED.log.error("mqttClient error: "+e);}
+    var onError = options.onConnect || function (e) {}
     mqttClient.on('error', onError);
 
     var onMessage = function (t,m,p) {
@@ -100,7 +88,7 @@ var setupMqttClient = function(creds, options){
         if(options.onMessage){
         	options.onMessage(msg);
         }else{
-        	RED.log.debug("mqttClient message: "+msg);
+        	console.log("mqttClient message: "+msg);
         }
     }
     mqttClient.on('message', onMessage);
