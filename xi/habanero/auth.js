@@ -20,14 +20,10 @@ try{
     try{
         // running embedded
         var RED = require('node-red-habanero');
-        console.log(RED);
     }catch(err){
         console.error("Unable to import RED runtime");
     }
 }
-console.log("AFTER");
-console.log(RED);
-
 
 var cachedJwts = {};
 
@@ -87,9 +83,6 @@ var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
 };
 
 var setupDefaultFlows = function(habaneroIdmUser, requestBody){
-    var RED = require('node-red-habanero');
-    console.log(RED);
-    console.log("indide");
     return when.promise(function(resolve, reject) {
         var credsId = RED.util.generateId();
         var defaultFlows = require('./defaultFlows/airFilterFlows.json');
