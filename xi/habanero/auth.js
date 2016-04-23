@@ -133,7 +133,7 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
     return when.promise(function(resolve, reject) {
         createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
             habaneroIdmUserCreds = {
-                creds_name: "HabaneroUser",
+                creds_name: "OrchestratorUser",
                 account_id: xiAccountId,
                 user_id: idmUser.userId,
                 username: idmUser.email,
