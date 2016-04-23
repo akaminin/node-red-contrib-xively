@@ -61,7 +61,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('xi-email out',{
         category: 'output',    
-        color:"#232435",
+        color:"#1e8c88",
         defaults: {            
             name: {value:""},   
             xively_creds: {type:"xively-user-credentials",required:true},
@@ -75,7 +75,7 @@
         },
         inputs:1,             
         outputs:0,              
-        icon: "envelope.png",
+        icon: "envelope_output.png",
         align: "right",    
         label: function() {    
             return this.name||"Email";

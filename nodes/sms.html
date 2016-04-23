@@ -52,7 +52,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('xi-sms out',{
         category: 'output',    
-        color:"#232435",
+        color:"#1e8c88",
         defaults: {            
             name: {value:""},   
             xively_creds: {type:"xively-user-credentials",required:true},
@@ -64,7 +64,7 @@
         },
         inputs:1,             
         outputs:0,              
-        icon: "inject.png",
+        icon: "inject_output.png",
         align: "right",    
         label: function() {    
             return this.name||"Txt Message";
