@@ -129,6 +129,7 @@ var setupDefaultFlows = function(habaneroIdmUser, requestBody){
 
 
 var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, requestBody){
+    var RED = getRed();
     var habaneroIdmUserCreds;
     return when.promise(function(resolve, reject) {
         createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
