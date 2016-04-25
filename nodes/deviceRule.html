@@ -211,13 +211,13 @@
 
                 if (type === "btwn") {
                     var labelWidth = rule.find(".node-input-rule-btwn-label").width();
-                    btwnField1.typedInput("width",(newWidth-selectWidth-120));
-                    btwnField2.typedInput("width",(newWidth-selectWidth-120));
+                    btwnField1.typedInput("width",(newWidth-selectWidth-320));
+                    btwnField2.typedInput("width",(newWidth-selectWidth-320));
                 } else {
                     if (type === "true" || type === "false" || type === "null" || type === "nnull" || type === "else") {
                         // valueField.hide();
                     } else {
-                        valueField.typedInput("width",(newWidth-selectWidth-120));
+                        valueField.typedInput("width",(newWidth-selectWidth-320));
                     }
                 }
             }

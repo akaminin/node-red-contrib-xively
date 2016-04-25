@@ -270,13 +270,13 @@
 
                 if (type === "btwn") {
                     var labelWidth = rule.find(".node-input-rule-btwn-label").width();
-                    btwnField1.typedInput("width",(newWidth-selectWidth-120));
-                    btwnField2.typedInput("width",(newWidth-selectWidth-120));
+                    btwnField1.typedInput("width",(newWidth-selectWidth-320));
+                    btwnField2.typedInput("width",(newWidth-selectWidth-320));
                 } else {
                     if (type === "true" || type === "false" || type === "null" || type === "nnull" || type === "else") {
                         // valueField.hide();
                     } else {
-                        valueField.typedInput("width",(newWidth-selectWidth-120));
+                        valueField.typedInput("width",(newWidth-selectWidth-320));
                     }
                 }
             };
@@ -284,9 +284,9 @@
             function generateRule(i,rule) {
                 var container = $('<li/>');
                 var topRow = $('<div/>').appendTo(container);
-                var bottomRow = $('<div/>', {style:"padding-top: 5px; padding-left: 15px;"}).appendTo(container);
+                var bottomRow = $('<div/>', {style:"padding-top: 5px; padding-left: 58px;"}).appendTo(container);
                 var row2 = $('<div/>',{style:"padding-top: 5px; padding-left: 175px;"}).appendTo(container);
-                var row3 = $('<div/>',{style:"padding-top: 5px; padding-left: 120px;"}).appendTo(container);
+                var row3 = $('<div/>',{style:"padding-top: 5px; padding-left: 160px;"}).appendTo(container);
 
                 $('<i style="color: #eee; cursor: move;" class="node-input-rule-handle fa fa-bars"></i>').appendTo(topRow);
 
