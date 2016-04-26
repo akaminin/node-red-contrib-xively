@@ -130,19 +130,23 @@ var setupDefaultFlows = function(habaneroIdmUser, requestBody){
 
 var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, requestBody){
     var RED = getRed();
-    var habaneroIdmUserCreds;
+    var habaneroIdmUserCreds = { creds_name: "OrchestratorUser", account_id: xiAccountId };
     return when.promise(function(resolve, reject) {
-        createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
-            habaneroIdmUserCreds = {
-                creds_name: "OrchestratorUser",
-                account_id: xiAccountId,
-                user_id: idmUser.userId,
-                username: idmUser.email,
-                password: idmUser.password
-            };
-
-            return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId);
-
+            if(requestBody.FROM_CONCARIA === "true"){
+                // use concaria user
+                habaneroIdmUserCreds.user_id = requestBody.XIVELY_ACCOUNT_USER_IDM_ID;
+                habaneroIdmUserCreds.username = requestBody.email;
+                habaneroIdmUserCreds.password = requestBody.password;
+                return {accountUser:{id:requestBody.XIVELY_ACCOUNT_USER_BP_ID}};
+            }else{
+                // need to create new account user
+                createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
+                    habaneroIdmUserCreds.user_id = idmUser.userId;
+                    habaneroIdmUserCreds.username = idmUser.email;
+                    habaneroIdmUserCreds.password = idmUser.password;
+                    return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId);
+                });
+            }
         }).then(function(createAccountUserResp){
             habaneroIdmUserCreds.account_user_id = createAccountUserResp.accountUser.id;
 
