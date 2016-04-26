@@ -128,18 +128,19 @@ var setupDefaultFlows = function(habaneroIdmUser, requestBody){
 };
 
 
+
 var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, requestBody){
     var RED = getRed();
     var habaneroIdmUserCreds = { creds_name: "OrchestratorUser", account_id: xiAccountId };
     return when.promise(function(resolve, reject) {
+        when.promise(function(r) {
             if(requestBody.FROM_CONCARIA === "true"){
                 // use concaria user
                 habaneroIdmUserCreds.user_id = requestBody.XIVELY_ACCOUNT_USER_IDM_ID;
                 habaneroIdmUserCreds.username = requestBody.email;
                 habaneroIdmUserCreds.password = requestBody.password;
-                return when.promise(function(resolve) {
-                    resolve({accountUser:{id:requestBody.XIVELY_ACCOUNT_USER_BP_ID}});
-                });
+                return r({accountUser:{id:requestBody.XIVELY_ACCOUNT_USER_BP_ID}});
+                
             }else{
                 // need to create new account user
                 createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
