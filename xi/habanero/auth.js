@@ -137,7 +137,9 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
                 habaneroIdmUserCreds.user_id = requestBody.XIVELY_ACCOUNT_USER_IDM_ID;
                 habaneroIdmUserCreds.username = requestBody.email;
                 habaneroIdmUserCreds.password = requestBody.password;
-                return {accountUser:{id:requestBody.XIVELY_ACCOUNT_USER_BP_ID}};
+                return when.promise(function(resolve) {
+                    resolve({accountUser:{id:requestBody.XIVELY_ACCOUNT_USER_BP_ID}});
+                });
             }else{
                 // need to create new account user
                 createHabaneroIdmUser(xiAccountId, xiAppId, xiAccessToken).then(function(idmUser){
