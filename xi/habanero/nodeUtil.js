@@ -64,7 +64,7 @@ var ensureMsgHasDeviceInfo = function(xively_creds, msg){
 var setupMqttClient = function(creds, options){
 	//setup mqttClient
     var mqttClient = mqtt.connect("mqtts://",{
-          host: "broker.demo.xively.com",
+          host: "broker.xively.com",
           port: Number(8883),
           username: creds.account_user_id,
           password: creds.mqtt_secret

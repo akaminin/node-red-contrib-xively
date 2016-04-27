@@ -41,6 +41,7 @@ module.exports = function(RED) {
     });
 
     RED.httpAdmin.get('/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {
+        console.log("Inside templates call")
         getJwt(req.params.id).then(function(jwtConfig){
             blueprint.devicesTemplates.get(jwtConfig.account_id, jwtConfig.jwt).then(function(dTemplatesResp){
                 res.json(dTemplatesResp.deviceTemplates.results);
