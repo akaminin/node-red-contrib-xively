@@ -16,8 +16,6 @@ var getDevicesTemplates = function(accountId, jwt) {
           }
         },
         function(err,httpResponse,body){ 
-          console.log("Body")
-          console.log(body)
           var resp = JSON.parse(body);
           resolve(resp);
         });

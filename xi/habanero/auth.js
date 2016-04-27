@@ -45,9 +45,10 @@ var getJwtForCredentialsId = function(credentialsId){
         //need to go log in with credentials
         var creds = RED.nodes.getCredentials(credentialsId);
         loginUser(creds.username, creds.password, creds.account_id).then(function(loginResp){
-            if(loginResp == null){
+            if(loginResp == null || !loginResp.hasOwnProperty('jwt')){
                 return reject("Error loggin in with user: "+creds.username);
             }
+
             //cache the result
             cachedJwts[credentialsId] = {
                 obtained: new Date(),
