@@ -40,7 +40,9 @@ module.exports = function(RED) {
         }
     });
 
-    RED.httpAdmin.get('/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {
+    var base = (RED.settings.httpAdminRoot === "/") ? "" : RED.settings.httpAdminRoot;
+
+    RED.httpAdmin.get(base+'/xively/deviceTemplates/:id', RED.auth.needsPermission(""), function(req, res, next) {
         getJwt(req.params.id).then(function(jwtConfig){
             blueprint.devicesTemplates.get(jwtConfig.account_id, jwtConfig.jwt).then(function(dTemplatesResp){
                 res.json(dTemplatesResp.deviceTemplates.results);
@@ -51,7 +53,7 @@ module.exports = function(RED) {
         });
     });
 
-    RED.httpAdmin.get('/xively/orgs/:id', RED.auth.needsPermission(""), function(req, res, next) {
+    RED.httpAdmin.get(base+'/xively/orgs/:id', RED.auth.needsPermission(""), function(req, res, next) {
         getJwt(req.params.id).then(function(jwtConfig){
             blueprint.organizations.get(jwtConfig.account_id, jwtConfig.jwt, req.query.parentId, req.query.page).then(function(dOrgsResp){
                 res.json(dOrgsResp.organizations.results);
