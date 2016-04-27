@@ -153,6 +153,9 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
         }).then(function(createAccountUserResp){
             habaneroIdmUserCreds.account_user_id = createAccountUserResp.accountUser.id;
 
+            console.log("account_user_id")
+            console.log(habaneroIdmUserCreds.account_user_id)
+
             return blueprint.accessMqttCredentials.create(
                 xiAccountId, 
                 jwt,
@@ -160,6 +163,8 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
                 habaneroIdmUserCreds.account_user_id);
 
         }).then(function(mqttCreateResp){
+            console.log("create mwtt resp")
+            console.log(mqttCreateResp);
             habaneroIdmUserCreds.mqtt_secret = mqttCreateResp.mqttCredential.secret;
 
             return setupDefaultFlows(habaneroIdmUserCreds, requestBody);
