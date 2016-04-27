@@ -137,7 +137,7 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
             if(requestBody.FROM_CONCARIA === "true"){
                 // use concaria user
                 habaneroIdmUserCreds.user_id = requestBody.XIVELY_ACCOUNT_USER_IDM_ID;
-                habaneroIdmUserCreds.username = requestBody.email;
+                habaneroIdmUserCreds.username = requestBody.username;
                 habaneroIdmUserCreds.password = requestBody.password;
                 return r({accountUser:{id:requestBody.XIVELY_ACCOUNT_USER_BP_ID}});
                 
