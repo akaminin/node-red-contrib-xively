@@ -44,6 +44,8 @@ module.exports = function(RED) {
         console.log("Inside templates call")
         getJwt(req.params.id).then(function(jwtConfig){
             blueprint.devicesTemplates.get(jwtConfig.account_id, jwtConfig.jwt).then(function(dTemplatesResp){
+                console.log("Return resp")
+                console.log(dTemplatesResp)
                 res.json(dTemplatesResp.deviceTemplates.results);
             });
         }).catch(function(err){
