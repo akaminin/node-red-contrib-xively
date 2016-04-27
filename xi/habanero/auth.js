@@ -132,6 +132,8 @@ var setupDefaultFlows = function(habaneroIdmUser, requestBody){
 var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, requestBody){
     var RED = getRed();
     var habaneroIdmUserCreds = { creds_name: "OrchestratorUser", account_id: xiAccountId };
+    console.log("req")
+    console.log(requestBody)
     return when.promise(function(resolve, reject) {
         when.promise(function(r) {
             if(requestBody.FROM_CONCARIA === "true"){
