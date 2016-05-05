@@ -95,7 +95,9 @@ module.exports = function(RED) {
                     });
                 });
             }else{
-                sendEmail(jwt, toAddress, renderedSubject, renderedBody);
+                getJwt(node.xively_creds).then(function(jwtConfig){
+                    sendEmail(jwtConfig.jwt, toAddress, renderedSubject, renderedBody);
+                });
             }
 
             
