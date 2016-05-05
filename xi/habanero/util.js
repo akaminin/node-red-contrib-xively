@@ -10,19 +10,21 @@ var tSDataToJSON = function(tsData){
 	var data = {};
 	for(var i=0;i<lines.length;i++){
 	    var parts = lines[i].split(",");
-	    var v, t;
-	    if(!isNaN(parts[2])){
-	    	v = parseFloat(parts[2]);
-	    	t = "num";
-	    }else{
-	    	v = parts[3];
-	    	t = "str";
-	    }
-	    data[parts[1]] = {
-	      "timestamp":parts[0],
-	      "value":v,
-	      "type":t
-	    };
+	    if(parts.length > 3){
+		    var v, t;
+		    if(!isNaN(parts[2])){
+		    	v = parseFloat(parts[2]);
+		    	t = "num";
+		    }else{
+		    	v = parts[3];
+		    	t = "str";
+		    }
+		    data[parts[1].trim()] = {
+		      "timestamp":parts[0],
+		      "value":v,
+		      "type":t
+		    };
+		}
 	}
 	return data;
 }
