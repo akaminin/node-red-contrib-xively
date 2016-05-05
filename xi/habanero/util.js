@@ -16,7 +16,7 @@ var tSDataToJSON = function(tsData){
 		    	v = parseFloat(parts[2]);
 		    	t = "num";
 		    }else{
-		    	v = parts[3];
+		    	v = parts[3].trim();
 		    	t = "str";
 		    }
 		    data[parts[1].trim()] = {
