@@ -22,6 +22,23 @@ var getDevice = function(accountId, jwt, deviceId) {
     });
 };
 
+var putDevice = function(jwt, deviceId, etag, body) {
+    return when.promise(function(resolve) {
+        request.put({
+          url: BLUEPRINT_BASE_URL+'devices/'+deviceId, 
+          headers: {
+            Authorization: "Bearer "+ jwt,
+            etag: etag
+          },
+          form:body
+        },
+        function(err,httpResponse,body){ 
+          var resp = JSON.parse(body);
+          resolve(resp);
+        });
+    });
+};
+
 var getDevices = function(accountId, jwt) {
     return when.promise(function(resolve) {
         request.get({
@@ -34,8 +51,6 @@ var getDevices = function(accountId, jwt) {
           }
         },
         function(err,httpResponse,body){ 
-          console.log(err);
-          console.log(httpResponse);
           var resp = JSON.parse(body);
           resolve(resp);
         });
@@ -66,5 +81,6 @@ var getDevicesByDeviceTemplateId = function(accountId, jwt, deviceTemplateId, pa
 module.exports = {
     get: getDevices,
     getByDeviceTemplateId: getDevicesByDeviceTemplateId,
-    getDevice: getDevice
+    getDevice: getDevice,
+    putDevice: putDevice
 };

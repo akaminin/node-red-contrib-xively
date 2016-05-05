@@ -18,7 +18,12 @@
 <script type="text/x-red" data-template-name="xi-weather-query">
     <div class="form-row">
         <label for="weather-forecast-time-select"><i class="fa fa-globe"></i> <span data-i18n="weather.label.forecast"></span></label>
-        <select id="weather-forecast-time-select"><option value="tomorrow" data-i18n="weather.label.tomorrow"></option><option value="specific" data-i18n="weather.label.datetime"></option><option value="message" data-i18n="weather.label.input"></option></select>
+        <select id="weather-forecast-time-select">
+            <option value="currently" data-i18n="weather.label.currently"></option>
+            <option value="tomorrow" data-i18n="weather.label.tomorrow"></option>
+            <option value="specific" data-i18n="weather.label.datetime"></option>
+            <option value="message" data-i18n="weather.label.input"></option>
+        </select>
     </div>
     <div class="form-row weather-forecast-time" id="weather-forecast-time-specific">
         <label for="node-input-date"><i class="fa fa-calendar"></i> <span data-i18n="weather.label.date"></span></label>
@@ -84,6 +89,8 @@
             });
             if(this.date !== ""||this.time !== ""){
                 $("#weather-forecast-time-select").val("specific");
+            } else if (this.mode === "currently"){
+                $("#weather-forecast-time-select").val("currently");
             } else if (this.mode === "node"){
                 $("#weather-forecast-time-select").val("tomorrow");
             } else {
@@ -101,7 +108,9 @@
             }
             if(type === "message"){
                 this.mode = "message";
-            } else {
+            } else if(type === "currently" ){
+                this.mode = "currently";
+            }else {
                 this.mode = "node";
             }
         },

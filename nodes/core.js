@@ -51,6 +51,17 @@ module.exports = function(RED) {
         });
     });
 
+    RED.httpAdmin.get('/xively/deviceTemplates/:id/customFields/:tmplId', RED.auth.needsPermission(""), function(req, res, next) {
+        getJwt(req.params.id).then(function(jwtConfig){
+            blueprint.devicesTemplates.getCustomFields(jwtConfig.account_id, jwtConfig.jwt, req.params.tmplId).then(function(cFieldsResp){
+                res.json(cFieldsResp.deviceFields.results);
+            });
+        }).catch(function(err){
+            console.log(err);
+            res.json([err]);
+        });
+    });
+
     RED.httpAdmin.get('/xively/orgs/:id', RED.auth.needsPermission(""), function(req, res, next) {
         getJwt(req.params.id).then(function(jwtConfig){
             blueprint.organizations.get(jwtConfig.account_id, jwtConfig.jwt, req.query.parentId, req.query.page).then(function(dOrgsResp){

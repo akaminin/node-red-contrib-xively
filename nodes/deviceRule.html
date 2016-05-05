@@ -176,9 +176,10 @@
             function onXivelyCredsInputChange(e){
                 var currentVal = xivelyCredsInput.val();
                 if(currentVal == "" || currentVal == "_ADD_"){
+                    console.log("UH Oh")
                     deviceTemplateInput.prop('disabled', 'disabled');
-                    channelInput.prop('disabled', 'disabled');
                 }else{
+                    console.log("got here")
                     xively_creds = currentVal;
                     setupDeviceTemplates();
                 }
@@ -334,8 +335,10 @@
             }
 
             if (!xively_creds || xively_creds === "") {
+                console.log("we got nuthin")
                 deviceTemplateInput.prop('disabled', 'disabled');
             }else{
+                console.log("should work")
                 setupDeviceTemplates();
             }
 

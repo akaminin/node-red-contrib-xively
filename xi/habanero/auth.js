@@ -63,20 +63,21 @@ var getJwtForCredentialsId = function(credentialsId){
 
 };
 
-var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
+var createHabaneroIdmUser = function(xiAccountId, xiAppId){
     return when.promise(function(resolve, reject) {
-        var loop = 0;
+        var loop = 75;
         var pw = uuid.v4();
         var email = null;
 
         function createUser(){
             email = "habanero_"+loop+"@"+xiAccountId+".com";
-            return idm.auth.createUser(email, pw, xiAccountId, xiAppId, xiAccessToken).then(function(resp){
+            return idm.auth.createUser(email, pw, xiAccountId, xiAppId).then(function(resp){
+                console.log(resp)
                 if(resp['emailAddress'] === email){
                     resolve({email:email, password:pw, userId:resp["userId"]});
                 }else{
                     loop++;
-                    if(loop>75){
+                    if(loop>95){
                         return reject("too many habanero users");
                     }
                     return createUser();
@@ -131,6 +132,9 @@ var setupDefaultFlows = function(habaneroIdmUser, requestBody){
 
 
 var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, requestBody){
+    console.log(xiAccountId)
+    console.log(xiAppId)
+    console.log(xiAccessToken)
     var RED = getRed();
     var habaneroIdmUserCreds = { creds_name: "OrchestratorUser", account_id: xiAccountId };
     return when.promise(function(resolve, reject) {
@@ -148,7 +152,7 @@ var setupHabaneroAuth = function(jwt, xiAccountId, xiAppId, xiAccessToken, reque
                     habaneroIdmUserCreds.user_id = idmUser.userId;
                     habaneroIdmUserCreds.username = idmUser.email;
                     habaneroIdmUserCreds.password = idmUser.password;
-                    return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId);
+                    return blueprint.accountUsers.post(xiAccountId, jwt, idmUser.userId).then(r);
                 });
             }
         }).then(function(createAccountUserResp){

@@ -29,6 +29,8 @@
       "xively-core": "nodes/core.js",
       "xively-channel": "nodes/xivelyChannel.js",
       "xively-device-rule": "nodes/deviceRule.js",
+      "xively-for-each-device": "nodes/forEachDevice.js",
+      "xively-set-custom-field": "nodes/setCustomField.js",
       "salesforce": "nodes/salesforce.js",
       "email": "nodes/email.js",
       "sms": "nodes/sms.js",

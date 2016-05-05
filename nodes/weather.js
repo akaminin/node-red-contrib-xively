@@ -27,7 +27,7 @@ module.exports = function(RED) {
 
     function apiRespDataToWeatherInfo(respData, dataRow){
         var jsun = respData.weather;
-        var weather = {data:jsun};
+        var weather = {};
         weather.slug = jsun.daily.data[dataRow].icon;
         weather.summary = jsun.daily.data[dataRow].summary;
         weather.humidity = jsun.daily.data[dataRow].humidity;
@@ -66,6 +66,9 @@ module.exports = function(RED) {
                 function(err,httpResponse,body){ 
                     try{
                         var resp = JSON.parse(body);
+                        if(resp.success == false){
+                            reject(resp.message);
+                        }
                         var dataRow = (tomorrow) ? 1 : 0;
                         var weatherInfo  = apiRespDataToWeatherInfo(resp, dataRow);
                         resolve(weatherInfo);
@@ -159,6 +162,7 @@ module.exports = function(RED) {
         this.units = n.units || "us";
         this.lat = n.lat;
         this.lon = n.lon;
+        this.mode = n.mode;
         this.xively_creds = n.xively_creds;
         var node = this;
 
@@ -170,7 +174,7 @@ module.exports = function(RED) {
                     msg.weather = weatherInfo;
                     node.send(msg);
                 }).catch(function(err){
-                    console.log("Error retirving weather: "+err);
+                    RED.log.error("Error retrieving weather: "+err);
                 });
             }
         });
@@ -186,6 +190,7 @@ module.exports = function(RED) {
         this.lon = n.lon;
         this.rules = n.rules;
         this.matchall = n.matchall;
+        this.mode = n.mode;
         this.xively_creds = n.xively_creds;
         var node = this;
 

@@ -22,7 +22,6 @@ module.exports = function(RED) {
 
     var when = require("when");
 
-    var util = require("../xi/habanero/util");
     var nodeUtil = require("../xi/habanero/nodeUtil");
     var getJwt = require("../xi/habanero/auth").getJwtForCredentialsId;
 

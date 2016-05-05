@@ -20,8 +20,8 @@ module.exports = {
 
     authenticate: function(username, password, requestBody) {
         var accountId   = requestBody["accountId"];
-        var appId       = requestBody["appId"];
-        var accessToken = requestBody["accessToken"];
+        var appId       = (requestBody["appId"] == "") ? process.env.XIVELY_IDM_APP_ID : requestBody["appId"];
+        var accessToken = (requestBody["accessToken"] == "") ? process.env.XIVELY_IDM_APP_TOKEN : requestBody["accessToken"];
         var loggedInUserJwt;
         return when.promise(function(resolve) {
             habaneroSettings.get().then(function(hSettings) {
