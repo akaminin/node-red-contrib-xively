@@ -79,21 +79,24 @@ var getJwtForCredentialsId = function(credsId){
 
 };
 
-var createHabaneroIdmUser = function(xiAccountId, xiAppId){
+var createHabaneroIdmUser = function(xiAccountId, xiAppId, xiAccessToken){
     return when.promise(function(resolve, reject) {
-        var loop = 75;
+        var loop = 1;
         var pw = uuid.v4();
         var email = null;
 
+        console.log("yyy")
+        console.log(xiAccessToken);
+
         function createUser(){
             email = "habanero_"+loop+"@"+xiAccountId+".com";
-            return idm.auth.createUser(email, pw, xiAccountId, xiAppId).then(function(resp){
+            return idm.auth.createUser(email, pw, xiAccountId, xiAppId, xiAccessToken).then(function(resp){
                 console.log(resp)
                 if(resp['emailAddress'] === email){
                     resolve({email:email, password:pw, userId:resp["userId"]});
                 }else{
                     loop++;
-                    if(loop>95){
+                    if(loop>75){
                         return reject("too many habanero users");
                     }
                     return createUser();
