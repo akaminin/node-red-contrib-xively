@@ -256,3 +256,81 @@
     }
   });
 </script>
+
+<script type="text/x-red" data-template-name="salesforce-inventory-request out">
+  <div class="form-row">
+    <label for="node-input-salesforce"><i class="fa fa-user"></i> Log in as</label>
+    <input type="text" id="node-input-salesforce">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="salesforce-inventory-request out">
+   <p>Create an Inventory Request in Salesforce based on device info.</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('salesforce-inventory-request out', {
+    category: 'salesforce',
+    color: "#009CDB",
+    defaults: {
+      salesforce: { type: 'salesforce', required: true },
+      name: { value: 'Inventory Request' }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "sf_blue.png", 
+    label: function () {
+      var forceNode = RED.nodes.node(this.salesforce);
+      return this.name || 'Inventory Request';
+    },
+    labelStyle: function () {
+      return '';
+    },
+    paletteLabel: function() {
+      return "Inventory Request";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="salesforce-emergency-request out">
+  <div class="form-row">
+    <label for="node-input-salesforce"><i class="fa fa-user"></i> Log in as</label>
+    <input type="text" id="node-input-salesforce">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="salesforce-emergency-request out">
+   <p>Create an Emergency Request in Salesforce based on device info.</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('salesforce-emergency-request out', {
+    category: 'salesforce',
+    color: "#009CDB",
+    defaults: {
+      salesforce: { type: 'salesforce', required: true },
+      name: { value: 'Emergency Request' }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "sf_blue.png", 
+    label: function () {
+      var forceNode = RED.nodes.node(this.salesforce);
+      return this.name || 'Emergency Request';
+    },
+    labelStyle: function () {
+      return '';
+    },
+    paletteLabel: function() {
+      return "Emergency Request";
+    }
+  });
+</script>

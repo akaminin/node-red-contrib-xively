@@ -224,4 +224,114 @@ module.exports = function (RED) {
   }
   RED.nodes.registerType('salesforce-create-case out', ForceCreateCaseNode);
 
+
+
+  function ForceCreateInventoryRequestNode(n) {
+    RED.nodes.createNode(this, n);
+    this.salesforce = n.salesforce;
+    this.forceConfig = RED.nodes.getNode(this.salesforce);
+    this.xively_creds;
+
+    var node = this;
+
+    if (this.forceConfig) {
+      settings.get().then(function(hsettings){
+          node.xively_creds = hsettings.credsId;
+          setupNode();
+      });
+    }else {
+      this.error('missing salesforce configuration');
+    }
+
+    function setupNode(){
+      node.on('input', function (msg) {
+        node.sendMsg = function (err, result) {
+          if (err) {
+            node.error(err.toString());
+            node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+          } else {
+            node.status({});
+          }
+          msg.payload = result;
+          node.send(msg);
+        };
+
+        this.forceConfig.login(function (conn, err) {
+          if(err){
+            node.sendMsg(err);
+            return;
+          }
+
+          var post_obt = {};
+          post_obt.Status__c = "New - Requested";
+          post_obt.Request_Date_Time__c = new Date().toISOString();
+
+          nodeUtil.ensureMsgHasDeviceInfo(node.xively_creds, msg).then(function(updatedMsg){
+            post_obt.Employee_Requestor__c = updatedMsg.device.employeeId || "003B0000006JIlS";
+            post_obt.Request_Type__c = updatedMsg.vendorType || "Popcorn";
+            post_obt.Request_Geolocation__Latitude__s = msg.latitude || updatedMsg.device.latitude;
+            post_obt.Request_Geolocation__Longitude__s = msg.longitude || updatedMsg.device.longitude;
+            conn.sobject('Inventory_Request__c').create(post_obt, node.sendMsg);
+          });
+
+        }, msg);
+      });
+    }
+  }
+  RED.nodes.registerType('salesforce-inventory-request out', ForceCreateInventoryRequestNode);
+
+
+  function ForceCreateEmergencyTrackingNode(n) {
+    RED.nodes.createNode(this, n);
+    this.salesforce = n.salesforce;
+    this.forceConfig = RED.nodes.getNode(this.salesforce);
+    this.xively_creds;
+
+    var node = this;
+
+    if (this.forceConfig) {
+      settings.get().then(function(hsettings){
+          node.xively_creds = hsettings.credsId;
+          setupNode();
+      });
+    }else {
+      this.error('missing salesforce configuration');
+    }
+
+    function setupNode(){
+      node.on('input', function (msg) {
+        node.sendMsg = function (err, result) {
+          if (err) {
+            node.error(err.toString());
+            node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+          } else {
+            node.status({});
+          }
+          msg.payload = result;
+          node.send(msg);
+        };
+
+        this.forceConfig.login(function (conn, err) {
+          if(err){
+            node.sendMsg(err);
+            return;
+          }
+
+          var post_obt = {};
+          post_obt.Status__c = "New";
+          post_obt.Emergency_Type__c = "Perpetrator";
+          post_obt.Reported_Date_Time__c = new Date().toISOString();
+
+          nodeUtil.ensureMsgHasDeviceInfo(node.xively_creds, msg).then(function(updatedMsg){
+            post_obt.Employee__c = updatedMsg.device.employeeId || "003B0000006JIlS";
+            post_obt.Emergency_Geolocation__Latitude__s = msg.latitude || updatedMsg.device.latitude;
+            post_obt.Emergency_Geolocation__Longitude__s = msg.longitude || updatedMsg.device.longitude;
+            conn.sobject('Emergency_Tracking__c').create(post_obt, node.sendMsg);
+          });
+
+        }, msg);
+      });
+    }
+  }
+  RED.nodes.registerType('salesforce-emergency-request out', ForceCreateEmergencyTrackingNode);
 }

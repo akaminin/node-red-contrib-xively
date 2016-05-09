@@ -30,34 +30,50 @@ var getRed = function(){
 
 var cachedJwts = {};
 
-var getJwtForCredentialsId = function(credentialsId){
+var getJwtForCredentialsId = function(credsId){
     var RED = getRed();
     return when.promise(function(resolve, reject) {
-        if(cachedJwts[credentialsId]){
-            var jwtConfig = cachedJwts[credentialsId];
-            var now  = new Date();
-            //check if its been 15 minutes since getting jwt
-            var expiration = new Date(jwtConfig.obtained.getTime() + 15*60000);
-            if(now < expiration){
-                return resolve(cachedJwts[credentialsId]);
-            }
+        function getCredsId() {
+            return when.promise(function(res, rej) {
+                if(credsId === null){
+                    habaneroSettings.get().then(function(settings){
+                        console.log("AA")
+                        console.log(settings.credsId);
+                        res(settings.credsId);
+                    });
+                }else{
+                    res(credsId);
+                }
+            });
         }
-        //need to go log in with credentials
-        var creds = RED.nodes.getCredentials(credentialsId);
-        loginUser(creds.username, creds.password, creds.account_id).then(function(loginResp){
-            if(loginResp == null || !loginResp.hasOwnProperty('jwt')){
-                return reject("Error loggin in with user: "+creds.username);
-            }
 
-            //cache the result
-            cachedJwts[credentialsId] = {
-                obtained: new Date(),
-                jwt: loginResp["jwt"],
-                account_id: creds.account_id
-            };
-            return resolve(cachedJwts[credentialsId]);
-        }).catch(function(err){
-            return reject("Unkown error: "+err);
+        getCredsId().then((credentialsId) => {
+            if(cachedJwts[credentialsId]){
+                var jwtConfig = cachedJwts[credentialsId];
+                var now  = new Date();
+                //check if its been 15 minutes since getting jwt
+                var expiration = new Date(jwtConfig.obtained.getTime() + 15*60000);
+                if(now < expiration){
+                    return resolve(cachedJwts[credentialsId]);
+                }
+            }
+            //need to go log in with credentials
+            var creds = RED.nodes.getCredentials(credentialsId);
+            loginUser(creds.username, creds.password, creds.account_id).then(function(loginResp){
+                if(loginResp == null || !loginResp.hasOwnProperty('jwt')){
+                    return reject("Error loggin in with user: "+creds.username);
+                }
+
+                //cache the result
+                cachedJwts[credentialsId] = {
+                    obtained: new Date(),
+                    jwt: loginResp["jwt"],
+                    account_id: creds.account_id
+                };
+                return resolve(cachedJwts[credentialsId]);
+            }).catch(function(err){
+                return reject("Unkown error: "+err);
+            });
         });
     });
 

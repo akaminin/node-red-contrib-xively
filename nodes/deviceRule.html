@@ -318,11 +318,13 @@
                     valueField.typedInput('value',rule.v);
                     valueField.typedInput('type',rule.vt||'num');
                 }
-                if(rule.iv && rule.it){
-                    inputField.typedInput('value',rule.iv);
-                    inputField.typedInput('type',rule.it||"channel");
+                
+                console.log(rule.iv);
+
+                inputField.typedInput('value',rule.iv);
+                inputField.typedInput('type',rule.it||"channel");
                     
-                }
+                
                 
                 inputField.typedInput('subvalue',rule.sv||"value");
 
@@ -410,6 +412,11 @@
                     if (type === "regex") {
                         r.case = rule.find(".node-input-rule-case").prop("checked");
                     }
+                }else{
+                    r.sv = rule.find(".node-input-rule-input-value").typedInput('subvalue');
+                    r.iv = rule.find(".node-input-rule-input-value").typedInput('value');
+                    r.ivn = rule.find(".red-ui-typedInput-option-trigger").text();
+                    r.it = rule.find(".node-input-rule-input-value").typedInput('type');
                 }
                 node.rules.push(r);
             });
