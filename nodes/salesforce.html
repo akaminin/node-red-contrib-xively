@@ -334,3 +334,42 @@
     }
   });
 </script>
+
+<script type="text/x-red" data-template-name="salesforce-checkin-request out">
+  <div class="form-row">
+    <label for="node-input-salesforce"><i class="fa fa-user"></i> Log in as</label>
+    <input type="text" id="node-input-salesforce">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="salesforce-checkin-request out">
+   <p>Create a CheckIn/CheckOut Request in Salesforce based on device info.</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('salesforce-checkin-request out', {
+    category: 'salesforce',
+    color: "#009CDB",
+    defaults: {
+      salesforce: { type: 'salesforce', required: true },
+      name: { value: 'CheckIn Request' }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: "sf_blue.png", 
+    label: function () {
+      var forceNode = RED.nodes.node(this.salesforce);
+      return this.name || 'CheckIn Request';
+    },
+    labelStyle: function () {
+      return '';
+    },
+    paletteLabel: function() {
+      return "CheckIn Request";
+    }
+  });
+</script>
