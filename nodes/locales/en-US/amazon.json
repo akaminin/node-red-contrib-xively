@@ -1,0 +1,8 @@
+{
+    "amazon-dash-config": {
+        "tabs-label":{
+            "setup": "Setup",
+            "registration": "Registration Page"
+        }
+    }
+}

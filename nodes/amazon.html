@@ -1,0 +1,164 @@
+<!--
+  Copyright 2016 LogMeIn Inc
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="xively-amazon-replenish">
+    <div class="form-row">
+        <label for="node-input-dash_product" title="Dash Product Config"><i class="fa fa-user"></i> Product</label>
+        <input type="text" id="node-input-dash_product">
+    </div>
+    <div class="form-row">
+        <label for="node-input-slot_id" title="Amazon Slot Id"><i class="fa fa-user"></i> Slot Id</label>
+        <input type="text" id="node-input-slot_id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" style="display:none;">
+        <input type="hidden" id="node-input-xively_creds">
+        <input type="hidden" id="node-input-default_name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="xively-amazon-replenish">
+   <p>Amazon Dash Replenishment Service (DRS) enables connected devices to order physical goods from Amazon when supplies are running low—like a Brita Water Pitcher that orders more filters. By using Amazon Dash Replenishment, device makers are able to leverage Amazons authentication and payment systems, customer service, and fulfillment network—giving their customers access to Amazons low prices, great selection, and reliable delivery.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('xively-amazon-replenish',{
+        category: 'Amazon',    
+        color:"#EFAF27",
+        defaults: {            
+            name: {value:""}, 
+            default_name: {value:""}, 
+            dash_product:{type:"xively-dash-product-config", required:true},
+            xively_creds: {type:"xively-user-credentials",required:true},
+            slot_id:{value:""}
+        },
+        inputs:1,             
+        outputs:1,              
+        icon: "inject_output.png",
+        align: "right",    
+        label: function() {    
+            return this.name||this.default_name||"Replenish";
+        },
+        labelStyle: function() { 
+            return "";
+        },
+        paletteLabel: function() {
+          return "Replenish Slot";
+        },
+        oneditprepare: function(){
+            var node = this;
+            var reg_url = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+            var short_path = node.reg_page_path + "/" + node.id;
+            reg_url += short_path;
+            $("#reg_page_url").attr('href', reg_url).html(short_path);
+        },
+        oneditsave: function() {
+            var defaultName = $.trim("Replenish - "+$("#node-input-slot_id").val());
+            if(defaultName !== "Replenish - "){
+                $("#node-input-default_name").val(defaultName);
+            }
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="xively-dash-product-config">
+    <div class="form-row">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="xively-amazon-replenish-tabs"></ul>
+    </div>
+    <div id="xively-amazon-replenish-tabs-content" style="min-height: 170px;">
+        <div id="xively-amazon-replenish-tabs-setup" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-lwa_clientid"><i class="fa fa-tag"></i> LWA Config</label>
+                <input type="text" id="node-config-input-lwa_clientid">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-model_id"><i class="fa fa-tag"></i> Model Id</label>
+                <input type="text" id="node-config-input-model_id" placeholder="">
+            </div>
+        </div>
+        <div id="xively-amazon-replenish-tabs-registration" style="display:none">
+            <div class="form-row">
+                <label for="reg_page_url"><i class="fa fa-user"></i> Signup Url</label>
+                <a href="" id="reg_page_url" target="_blank"></a>
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-reg_page_title"><i class="fa fa-user"></i> Title</label>
+                <input type="text" id="node-config-input-reg_page_title">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-reg_page_header"><i class="fa fa-user"></i> Heading</label>
+                <input type="text" id="node-config-input-reg_page_header">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-reg_page_description"><i class="fa fa-user"></i> Description</label>
+                <input type="text" id="node-config-input-reg_page_description">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-reg_page_description"><i class="fa fa-user"></i> Submit Txt</label>
+                <input type="text" id="node-config-input-reg_page_action">
+            </div>
+        </div>
+    </div>
+    <div class="form-row" style="display:none;">
+        <input type="hidden" id="node-config-input-reg_page_path">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('xively-dash-product-config',{
+        category: 'config',
+        defaults: {
+            lwa_clientid: {value:"", required:true},
+            model_id: {value:"", required:true},
+            reg_page_path: {value:"/amazon-dash"},
+            reg_page_title: {value:"Dash Service",required:true},
+            reg_page_header: {value:"Sign up for automatic refills",required:true},
+            reg_page_description: {value:"The next time your device needs replacment parts, we can place the order for you through your amazon account",required:true},
+            reg_page_action: {value:"Begin Registration",required:true}
+        },
+        label: function() {
+            return this.model_id || "dash-config";
+        },
+        oneditprepare: function () {
+            var node = this;
+            var tabs = RED.tabs.create({
+                id: "xively-amazon-replenish-tabs",
+                onchange: function(tab) {
+                    $("#xively-amazon-replenish-tabs-content").children().hide();
+                    $("#" + tab.id).show();
+                }
+            });
+            tabs.addTab({
+                id: "xively-amazon-replenish-tabs-setup",
+                label: this._("amazon-dash-config.tabs-label.setup")
+            });
+            tabs.addTab({
+                id: "xively-amazon-replenish-tabs-registration",
+                label: this._("amazon-dash-config.tabs-label.registration")
+            });
+            setTimeout(function() { tabs.resize()},0);
+
+            var reg_url = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+            var short_path = node.reg_page_path + "/" + node.id;
+            reg_url += short_path;
+            $("#reg_page_url").attr('href', reg_url).html(short_path);
+            
+        }
+    });
+</script>

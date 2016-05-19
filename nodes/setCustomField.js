@@ -44,7 +44,10 @@ module.exports = function(RED) {
             putBody[node.device_field] = setValue;
             getJwt(node.xively_creds).then(function(jwtResp){
                 devices.putDevice(jwtResp.jwt, msg.device.id, msg.device.version, putBody).then((putResp) => {
-                    RED.log.info(JSON.stringify(putResp));
+                    if(putResp.hasOwnProperty('error')){
+                        RED.log.info("Error setting custom field for device id: "+msg.device.id);
+                        RED.log.info(JSON.stringify(putResp));
+                    }
                 });
             });
         }

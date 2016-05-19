@@ -37,8 +37,6 @@ var getJwtForCredentialsId = function(credsId){
             return when.promise(function(res, rej) {
                 if(credsId === null){
                     habaneroSettings.get().then(function(settings){
-                        console.log("AA")
-                        console.log(settings.credsId);
                         res(settings.credsId);
                     });
                 }else{

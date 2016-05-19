@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <script src="/vendor/vendor.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <style>
+        /*
+     * Globals
+     */
+
+    /* Links */
+    a,
+    a:focus,
+    a:hover {
+      color: #fff;
+    }
+
+    /* Custom default button */
+    .btn-default,
+    .btn-default:hover,
+    .btn-default:focus {
+      color: #333;
+      text-shadow: none; /* Prevent inheritence from `body` */
+      background-color: #fff;
+      border: 1px solid #fff;
+    }
+
+
+    /*
+     * Base structure
+     */
+
+    html,
+    body {
+      height: 100%;
+      background-color: #333;
+    }
+    body {
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0,0,0,.5);
+    }
+
+    /* Extra markup and styles for table-esque vertical and horizontal centering */
+    .site-wrapper {
+      display: table;
+      width: 100%;
+      height: 100%; /* For at least Firefox */
+      min-height: 100%;
+      -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+              box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+    }
+    .site-wrapper-inner {
+      display: table-cell;
+      vertical-align: top;
+    }
+    .cover-container {
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    /* Padding for spacing */
+    .inner {
+      padding: 30px;
+    }
+
+
+    /*
+     * Header
+     */
+    .masthead-brand {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .masthead-nav > li {
+      display: inline-block;
+    }
+    .masthead-nav > li + li {
+      margin-left: 20px;
+    }
+    .masthead-nav > li > a {
+      padding-right: 0;
+      padding-left: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff; /* IE8 proofing */
+      color: rgba(255,255,255,.75);
+      border-bottom: 2px solid transparent;
+    }
+    .masthead-nav > li > a:hover,
+    .masthead-nav > li > a:focus {
+      background-color: transparent;
+      border-bottom-color: #a9a9a9;
+      border-bottom-color: rgba(255,255,255,.25);
+    }
+    .masthead-nav > .active > a,
+    .masthead-nav > .active > a:hover,
+    .masthead-nav > .active > a:focus {
+      color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    @media (min-width: 768px) {
+      .masthead-brand {
+        float: left;
+      }
+      .masthead-nav {
+        float: right;
+      }
+    }
+
+
+    /*
+     * Cover
+     */
+
+    .cover {
+      padding: 0 20px;
+    }
+    .cover .btn-lg {
+      padding: 10px 20px;
+      font-weight: bold;
+    }
+
+
+    /*
+     * Footer
+     */
+
+    .mastfoot {
+      color: #999; /* IE8 proofing */
+      color: rgba(255,255,255,.5);
+    }
+
+
+    /*
+     * Affix and center
+     */
+
+    @media (min-width: 768px) {
+      /* Pull out the header and footer */
+      .masthead {
+        position: fixed;
+        top: 0;
+      }
+      .mastfoot {
+        position: fixed;
+        bottom: 0;
+      }
+      /* Start the vertical centering */
+      .site-wrapper-inner {
+        vertical-align: middle;
+      }
+      /* Handle the widths */
+      .masthead,
+      .mastfoot,
+      .cover-container {
+        width: 100%; /* Must be percentage or pixels for horizontal alignment */
+      }
+    }
+
+    @media (min-width: 992px) {
+      .masthead,
+      .mastfoot,
+      .cover-container {
+        width: 700px;
+      }
+    }
+    </style>
+</head>
+<body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">{{title}}</h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li class="active"><a href="#">Signup</a></li>
+                  <li><a href="#">Features</a></li>
+                  <li><a href="#">Contact</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h1 class="cover-heading">{{header}}</h1>
+            <p class="lead">{{description}}</p>
+            <form style="padding-top:25px;">
+              <div class="form-group row">
+                <label for="deviceSerial" class="col-sm-3 form-control-label">Device Serial:</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" id="deviceSerial" placeholder="Serial Number">
+                </div>
+              </div>
+            </form>
+            <p class="lead" style="padding-top:25px;">
+              <a href="#" class="btn btn-lg btn-default" onClick="go();">{{action}}</a>
+            </p>
+          </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Powered by <a href="http://www.xively.com">Xively</a></p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <script>
+        function go(){
+            var serial = $("#deviceSerial").val();
+            var options = new Object();
+            var scope = ('dash:replenish');
+            var scope_data = new Object();
+            var model = "HomeAirPurifier3000";
+            scope_data['dash:replenish'] = {
+              "device_model": model,
+              "serial": serial, 
+              "is_test_device": true
+            }; 
+            options['scope_data'] = scope_data;
+            options['scope'] = scope;
+            options['state'] = "AABB";
+            options['response_type'] = "code";
+            amazon.Login.authorize(options, "http://127.0.0.1:1880/lwa_return");
+        }
+    </script>
+    <!-- amazon LWA lib -->
+    <div id="amazon-root"></div>
+    <script type="text/javascript">
+    window.onAmazonLoginReady = function() {
+        amazon.Login.setClientId('{{lwa_clientid}}');
+    };
+    (function(d) {
+        var a = d.createElement('script'); a.type = 'text/javascript';
+        a.async = true; a.id = 'amazon-login-sdk';
+        a.src = 'https://api-cdn.amazon.com/sdk/login1.js';
+        d.getElementById('amazon-root').appendChild(a);
+    })(document);
+    </script>
+    <!-- end amazon LWA lib -->
+</body>
+</html>
