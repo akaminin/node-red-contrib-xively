@@ -21,6 +21,7 @@ module.exports = function(RED) {
     var url = require('url');
     var fs = require('fs');
     var path = require('path');
+    var request = require("request");
     var Mustache = require('mustache');
 
     var nodeUtil = require("../xi/habanero/nodeUtil");
@@ -60,6 +61,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
 
         this.slot_id = config.slot_id;
+        this.dash_product = config.dash_product;
 
         var product = RED.nodes.getNode(config.dash_product);
         var credentials = RED.nodes.getCredentials(config.xively_creds);
@@ -68,15 +70,15 @@ module.exports = function(RED) {
         function replenishSignupBegin(req,res,next) { 
             var hostname = req.protocol + '://' + req.headers.host;
 
-            var return_url = req.protocol + '://' + req.headers.host + "/lwa_return/pnode/";
-            return_url += config.dash_product + "/serial/";
-            console.log(return_url);
+            var return_url = req.protocol + '://' + req.headers.host + "/lwa_return";
             var view = {
                 title : product.reg_page_title,
                 header : product.reg_page_header,
                 description: product.reg_page_description,
                 action: product.reg_page_action,
+                model_id: product.model_id,
                 lwa_clientid: product.lwa_clientid,
+                p_node: node.dash_product,
                 return_url: return_url
             };
             res.send(Mustache.render(signupTemplate, view));
@@ -101,25 +103,28 @@ module.exports = function(RED) {
         RED.httpNode.get(reg_url_path, replenishSignupBegin, replenishSignupError);
 
         function doReplenish(accessToken, slotId){
-            // var headers = {Authorization: "Bearer "+ accessToken};
-            // headers["x-amzn-accept-type"] = "com.amazon.dash.replenishment.DrsReplenishResult@1.0";
-            // headers["x-amzn-type-version"] = "com.amazon.dash.replenishment.DrsReplenishInput@1.0";
+            //accessToken = accessToken.replace("Atza|", "");
+            //console.log(accessToken);
+            var headers = {Authorization: "Bearer "+ accessToken};
+            headers["x-amzn-accept-type"] = "com.amazon.dash.replenishment.DrsReplenishResult@1.0";
+            headers["x-amzn-type-version"] = "com.amazon.dash.replenishment.DrsReplenishInput@1.0";
 
-            // request.post({
-            //       url: DRS_BASE_URL + "replenish/" + slotId, 
-            //       headers: headers
-            //     },
-            //     function(err,httpResponse,body){ 
-            //         try{
-            //             var resp = JSON.parse(body);
-            //             var eventId = resp.eventInstanceId;
-            //             var code = resp.detialCode
-            //             RED.log.info("DrsReplenishResult: " + code);
-            //         }catch(err){
-            //             RED.log.warn("Error making replenish request: " + err);
-            //         }
-            //     });
-            // });
+            request.post({
+                  url: DRS_BASE_URL + "replenish/"+slotId, 
+                  headers: headers
+                },
+                function(err,httpResponse,body){ 
+                    try{
+                        var resp = JSON.parse(body);
+                        //console.log(resp);
+                        var eventId = resp.eventInstanceId;
+                        var code = resp.detailCode
+                        RED.log.info("DrsReplenishResult: " + code);
+                    }catch(err){
+                        RED.log.warn("Error making replenish request: " + err);
+                    }
+                }
+            );
         }
 
         this.on ('input', function(msg) {
@@ -161,13 +166,16 @@ module.exports = function(RED) {
         });
     }
 
-    RED.httpNode.get("/lwa_return/pnode/:p_node/serial/:serial", function(req, res, next) {
-        var product = RED.nodes.getNode(req.params.p_node);
+    RED.httpNode.get("/lwa_return", function(req, res, next) {
+        var b = new Buffer(req.query.state, 'base64');
+        var state = JSON.parse(b.toString());
+        console.log(state);
+        var product = RED.nodes.getNode(state.p_node);
         var view = {
             title : product.reg_page_title
         };
         if(!req.query.error){
-            doRegistration(serial, req.query.access_token)
+            doRegistration(state.serial, req.query.access_token)
             .catch(function(err){
                 console.log("Registration error: " + err);
             });

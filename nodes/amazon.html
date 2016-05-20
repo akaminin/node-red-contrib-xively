@@ -39,7 +39,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('xively-amazon-replenish',{
-        category: 'Amazon',    
+        category: 'Replenishment',    
         color:"#EFAF27",
         defaults: {            
             name: {value:""}, 
@@ -49,8 +49,8 @@
             slot_id:{value:""}
         },
         inputs:1,             
-        outputs:1,              
-        icon: "inject_output.png",
+        outputs:0,              
+        icon: "amazon.png",
         align: "right",    
         label: function() {    
             return this.name||this.default_name||"Replenish";
@@ -59,7 +59,7 @@
             return "";
         },
         paletteLabel: function() {
-          return "Replenish Slot";
+          return "Amazon";
         },
         oneditprepare: function(){
             var node = this;

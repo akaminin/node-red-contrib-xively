@@ -233,20 +233,29 @@
     <script>
         function go(){
             var serial = $("#deviceSerial").val();
+
+            var stateData = {
+              serial:serial,
+              p_node:"{{ p_node }}"
+            }
+
             var options = new Object();
             var scope = ('dash:replenish');
             var scope_data = new Object();
-            var model = "HomeAirPurifier3000";
+            var model = "{{model_id}}";
             scope_data['dash:replenish'] = {
               "device_model": model,
               "serial": serial, 
               "is_test_device": true
             }; 
+            options['interactive'] = "always";
             options['scope_data'] = scope_data;
             options['scope'] = scope;
-            options['state'] = "AABB";
-            options['response_type'] = "code";
-            amazon.Login.authorize(options, "http://127.0.0.1:1880/lwa_return");
+            var d = JSON.stringify(stateData)
+            console.log(d);
+            options['state'] = btoa(d);
+            options['response_type'] = "token";
+            amazon.Login.authorize(options, "{{{return_url}}}");
         }
     </script>
     <!-- amazon LWA lib -->
