@@ -135,8 +135,16 @@
                 fieldInput.empty();
                 fieldInput.append(new Option(selectFieldTypeMsg, ""));
                 var fields = templateCustomFields[deviceTemplateId];
+                fields = fields.concat([
+                    {name: "organizationId"},
+                    {name: "firmwareVersion"},
+                    {name: "latitude"},
+                    {name: "longitude"},
+                    {name: "externalIp"},
+                    {name: "geoIpLatitude"},
+                    {name: "geoIpLongitude"}
+                ]);
                 $.each(fields, function(i, field){
-                    console.log(field.name);
                     var selected = field.name == device_field;
                     fieldInput.append(new Option(
                         field.name, 
