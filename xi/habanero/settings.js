@@ -12,7 +12,7 @@ var redis = require('redis'),
         }
     });
 
-client.on("error", function (err) {});
+redisClient.on("error", function (err) {});
 
 
 var HABANERO_SETTINGS_KEY = "habanero_settings";
