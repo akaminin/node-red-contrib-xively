@@ -1,8 +1,18 @@
 var when = require("when");
 var redis = require('redis'),
     redisClient = redis.createClient({
-        url: process.env.REDIS_URL
+        url: process.env.REDIS_URL,
+        retry_strategy: function (options) {
+            if (options.times_connected > 15) {
+                // End reconnecting with built in error 
+                return undefined;
+            }
+            // reconnect after 
+            return Math.max(options.attempt * 100, 3000);
+        }
     });
+
+client.on("error", function (err) {});
 
 
 var HABANERO_SETTINGS_KEY = "habanero_settings";
