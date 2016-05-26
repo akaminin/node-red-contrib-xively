@@ -43,10 +43,19 @@ module.exports = function(RED) {
             var putBody = {};
             putBody[node.device_field] = setValue;
             getJwt(node.xively_creds).then(function(jwtResp){
-                devices.putDevice(jwtResp.jwt, msg.device.id, msg.device.version, putBody).then((putResp) => {
-                    if(putResp.hasOwnProperty('error')){
-                        RED.log.info("Error setting custom field for device id: "+msg.device.id);
-                        RED.log.info(JSON.stringify(putResp));
+                nodeUtil.ensureMsgHasDeviceInfo(node.xively_creds, msg).then(function(updatedMsg){
+                    msg = updatedMsg;
+                    devices.putDevice(jwtResp.jwt, msg.device.id, msg.device.version, putBody).then((putResp) => {
+                        if(putResp.hasOwnProperty('error')){
+                            RED.log.info("Error setting custom field for device id: "+msg.device.id);
+                            RED.log.info(JSON.stringify(putResp));
+                        }
+                    });
+                }).catch(function(err){
+                    if(err == "not a device message"){
+                        RED.log.error("Can not attach device info. This msg was not triggered by a device");
+                    }else{
+                        RED.log.error("Unable to capture device info for setCustomField: "+err);
                     }
                 });
             });
