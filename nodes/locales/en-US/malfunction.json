@@ -1,0 +1,16 @@
+{
+    "xively": {
+        "label": {
+            "xively":"Xively",
+            "name": "Name",
+            "device-type": "Device Type",
+            "select-device-type":"Select a device type...",
+            "xively-user-creds": "Xively Creds"
+        },
+        "status": {
+            "failed":"failed"
+        },
+        "errors": {
+        }
+    }
+}

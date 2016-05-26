@@ -23,38 +23,39 @@ module.exports = function(RED) {
     var nodeUtil = require("../xi/habanero/nodeUtil");
     var getJwt = require("../xi/habanero/auth").getJwtForCredentialsId;
 
-    function XivelyChannelNode (config) {
+    function XivelyMalfunctionNode (config) {
         RED.nodes.createNode(this,config);
 
         this.xively_creds = config.xively_creds;
         this.device_template = config.device_template;
-        this.device_channel = config.device_channel;
-        this.payload_format = config.payload_format || "raw";
 
         var credentials = RED.nodes.getCredentials(this.xively_creds);
 
         var node = this;
 
         function onMqttMessage(msg){
-            node.send(msg);
+            var messageJson = JSON.parse(msg.payload);
+            var logMessage = messageJson.message;
+            if( logMessage.indexOf('malfunction') >= 0){
+                msg.payload = messageJson;
+                node.send(msg);
+            }
         }
 
         function deviceSubscribe(device){
-            device.channels.forEach(function(channelType){
-                if(channelType.channelTemplateId == node.device_channel){
-                    node.mqttClient.subscribe(channelType.channel, function(err, granted){
-                        if(!err){
-                            RED.log.debug("subscribed to: "+channelType.channel);
-                        }else{
-                            RED.log.error("error subscribing: "+err);
-                        }
-                    });
+            var channel = "xi/blue/v1/"+device.accountId+"/d/"+device.id+"/_log";
+            node.mqttClient.subscribe(channel, function(err, granted){
+                if(!err){
+                    RED.log.debug("subscribed to: "+channel);
+                }else{
+                    RED.log.error("error subscribing: "+err);
                 }
             });
         }
 
         //setup mqttClient
         node.mqttClient = nodeUtil.setupMqttClient(credentials,{
+            format:"raw",
             onMessage: onMqttMessage
         });
 
@@ -66,7 +67,7 @@ module.exports = function(RED) {
                 deviceSubscribe
             );
         }catch(err){
-            RED.log.error("Error setting up XivelyChannelNode: " + err);
+            RED.log.error("Error setting up XivelyMalfunctionNode: " + err);
         };
 
         node.on("close", function() {
@@ -77,5 +78,5 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("xively-channel", XivelyChannelNode);
+    RED.nodes.registerType("xively-malfunction", XivelyMalfunctionNode);
 }
