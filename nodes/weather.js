@@ -22,6 +22,7 @@ module.exports = function(RED) {
 
     var xiRed = require('../');
     var getApiRoot = require('../xi/config').getApiRoot;
+    var nodeUtil = require("../xi/habanero/nodeUtil");
 
     var WEATHER_DATA_URL = getApiRoot('xively.habanero-proxy')+'weather';
 
@@ -47,8 +48,6 @@ module.exports = function(RED) {
             weather.slug = jsun.daily.data[dataRow].icon;
             weather.summary = jsun.daily.data[dataRow].summary;
             weather.humidity = jsun.daily.data[dataRow].humidity;
-            weather.maxTemp = jsun.daily.data[dataRow].temperatureMax;
-            weather.minTemp = jsun.daily.data[dataRow].temperatureMin;
             weather.windSpeed = jsun.daily.data[dataRow].windSpeed;
             weather.windBearing = jsun.daily.data[dataRow].windBearing;
             weather.cloudCover = jsun.daily.data[dataRow].cloudCover;
@@ -57,6 +56,8 @@ module.exports = function(RED) {
         }
         weather.sunrise = jsun.daily.data[dataRow].sunriseTime;
         weather.sunset = jsun.daily.data[dataRow].sunsetTime;
+        weather.maxTemp = jsun.daily.data[dataRow].temperatureMax;
+        weather.minTemp = jsun.daily.data[dataRow].temperatureMin;
         weather.lon = jsun.latitude;
         weather.lat = jsun.longitude;
         weather.units = jsun.flags.units;
@@ -184,16 +185,18 @@ module.exports = function(RED) {
         var node = this;
 
         this.on ('input', function(msg) {
-            var opts = getQueryOptions(node, msg);
-            if(opts !== null){
-                queryWeather(node.xively_creds, opts.lat, opts.lon, opts.isoDateStr, opts.tomorrow).
-                then(function(weatherInfo){
-                    msg.weather = weatherInfo;
-                    node.send(msg);
-                }).catch(function(err){
-                    RED.log.error("Error retrieving weather: "+err);
-                });
-            }
+            nodeUtil.ensureMsgHasDeviceInfo(null, msg, true).then((msg) => {
+                var opts = getQueryOptions(node, msg);
+                if(opts !== null){
+                    queryWeather(node.xively_creds, opts.lat, opts.lon, opts.isoDateStr, opts.tomorrow).
+                    then(function(weatherInfo){
+                        msg.weather = weatherInfo;
+                        node.send(msg);
+                    }).catch(function(err){
+                        RED.log.error("Error retrieving weather: "+err);
+                    });
+                }
+            });
         });
     }
 
@@ -230,6 +233,7 @@ module.exports = function(RED) {
 
         function evaluateRules(msg){
             var i = 0;
+            console.log(msg.weather);
             var loopRules = function(){
                 var rule = node.rules[i];
                 var prop = msg.weather[rule.iv];
@@ -240,8 +244,12 @@ module.exports = function(RED) {
                     v2 = RED.util.evaluateNodeProperty(rule.v2,rule.v2t,node,msg);
                 }
                 if (rule.t == "else") { prop = elseflag; elseflag = true; }
+                console.log(prop)
+                console.log(v1)
+                console.log(v2)
                 if (operators[rule.t](prop,v1,v2,rule.case)) {
                     // Rule passed
+                    console.log("pass")
                     i++;
                     if(node.matchall == true && i<node.rules.length){
                         // `ALL` query with additional rules, continue iteration
@@ -252,6 +260,7 @@ module.exports = function(RED) {
                     }
                 } else {
                     // rule failed
+                    console.log("fail")
                     if(!node.matchall){
                         // `OR` query, continue interation
                         i++;
@@ -268,14 +277,17 @@ module.exports = function(RED) {
         };
 
         this.on ('input', function(msg) {
-            var opts = getQueryOptions(node, msg);
-            if(opts !== null){
-                queryWeather(node.xively_creds, opts.lat, opts.lon, opts.isoDateStr, opts.tomorrow).
-                then(function(weatherInfo){
-                    msg.weather = weatherInfo;
-                    evaluateRules(msg);
-                });
-            }
+            nodeUtil.ensureMsgHasDeviceInfo(null, msg, true).then((msg) => {
+                console.log(msg.device);
+                var opts = getQueryOptions(node, msg);
+                if(opts !== null){
+                    queryWeather(node.xively_creds, opts.lat, opts.lon, opts.isoDateStr, opts.tomorrow).
+                    then(function(weatherInfo){
+                        msg.weather = weatherInfo;
+                        evaluateRules(msg);
+                    });
+                }
+            });
         });
     }
 
